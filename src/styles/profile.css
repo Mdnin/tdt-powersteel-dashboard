@@ -1,0 +1,156 @@
+.profile-page {
+  display: grid;
+  gap: 16px;
+}
+
+.profile-hero,
+.profile-card {
+  border: 1px solid rgba(255,122,0,0.22);
+  border-radius: 18px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.018)),
+    rgba(7,7,7,0.78);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.04);
+  backdrop-filter: blur(8px);
+}
+
+.profile-hero {
+  min-height: 150px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.profile-kicker {
+  color: #ffb56d;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.profile-hero h1 {
+  margin: 8px 0;
+  color: #fff;
+  font-size: clamp(28px, 3vw, 42px);
+}
+
+.profile-hero p {
+  margin: 0;
+  color: rgba(255,255,255,0.64);
+}
+
+.profile-card {
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.profile-avatar-editor {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+}
+
+.profile-avatar-preview {
+  width: 132px;
+  height: 132px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,122,0,0.34);
+  border-radius: 50%;
+  overflow: hidden;
+  color: #ffb56d;
+  background: rgba(255,122,0,0.12);
+  box-shadow: 0 0 22px rgba(255,122,0,0.12);
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.profile-avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-avatar-upload,
+.profile-save-btn {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(255,122,0,0.3);
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #ffb56d;
+  background: rgba(255,122,0,0.09);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.profile-avatar-upload input {
+  display: none;
+}
+
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.profile-form-grid label {
+  display: grid;
+  gap: 8px;
+}
+
+.profile-form-grid span {
+  color: rgba(255,255,255,0.62);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.profile-form-grid input {
+  min-height: 46px;
+  border: 1px solid rgba(255,122,0,0.2);
+  border-radius: 12px;
+  padding: 0 14px;
+  color: #fff;
+  background: rgba(255,122,0,0.075);
+  outline: none;
+}
+
+.profile-save-message {
+  margin: 0;
+  color: #b9f8cf;
+  font-size: 13px;
+}
+
+.profile-save-btn {
+  justify-self: end;
+  color: #111;
+  background: linear-gradient(135deg, #ff8a00, #ffd16f);
+}
+
+@media (max-width: 760px) {
+  .profile-hero,
+  .profile-card {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-save-btn {
+    width: 100%;
+  }
+}
