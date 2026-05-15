@@ -1,5 +1,6 @@
-import { memo, useCallback, useMemo, useState } from 'react';
-import { FiEye, FiEyeOff, FiKey, FiRefreshCw, FiSearch, FiShield, FiUserCheck, FiUserX } from 'react-icons/fi';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { FiEye, FiEyeOff, FiKey, FiRefreshCw, FiSearch, FiShield, FiUploadCloud, FiUserCheck, FiUserX } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../auth/AuthContext';
 import StatusBadge from '../../components/common/StatusBadge';
@@ -7,7 +8,7 @@ import { baseSalesReps } from '../../data/salesRepData';
 import { getPerformanceState } from '../../utils/salesRepUtils';
 import '../../styles/admin.css';
 
-const pageSize = 6;
+const pageSize = 8;
 
 const UserRow = memo(function UserRow({ employee, performance, isPasswordVisible, onTogglePassword, onApprove, onDeactivate, onResetPassword, onForceReset }) {
   const approve = useCallback(() => onApprove(employee.id), [employee.id, onApprove]);
@@ -19,25 +20,25 @@ const UserRow = memo(function UserRow({ employee, performance, isPasswordVisible
   return (
     <tr>
       <td data-label="Avatar">
-        <span className="admin-avatar-cell">{employee.avatar ? <img src={employee.avatar} alt="" /> : <FiShield />}</span>
+        <span className="admin-avatar-cell avatar-image">{employee.avatar ? <img src={employee.avatar} alt="" /> : <FiShield />}</span>
       </td>
       <td data-label="Name"><strong>{employee.name}</strong></td>
-      <td data-label="Position">{employee.position || 'Sales Representative'}</td>
-      <td data-label="Department">{employee.department || 'Sales Department'}</td>
-      <td data-label="Email">{employee.email}</td>
-      <td data-label="Performance"><StatusBadge status={performance} type="performance" /></td>
-      <td data-label="Status"><StatusBadge status={employee.status} type="approval" /></td>
+      <td data-label="Position"><span className="position-text">{employee.position || 'Sales Representative'}</span></td>
+      <td data-label="Department"><span className="department-text">{employee.department || 'Sales Department'}</span></td>
+      <td data-label="Email"><span className="email-text">{employee.email}</span></td>
+      <td data-label="Performance"><StatusBadge status={performance} type="performance" className="performance-badge" /></td>
+      <td data-label="Status"><StatusBadge status={employee.status} type="approval" className="status-badge" /></td>
       <td data-label="Password">
-        <div className="admin-password-cell">
-          <code>{isPasswordVisible ? employee.password : '********'}</code>
+        <div className="admin-password-cell admin-password-cell-compact">
+          <code className="password-box">{isPasswordVisible ? employee.password : '********'}</code>
           <button type="button" onClick={togglePassword} aria-label={isPasswordVisible ? 'Hide employee password' : 'View employee password'}>
             {isPasswordVisible ? <FiEyeOff /> : <FiEye />}
           </button>
-          {employee.forcePasswordReset && <span>Reset required</span>}
+          {employee.forcePasswordReset && <span className="admin-reset-flag">Reset</span>}
         </div>
       </td>
       <td data-label="Actions">
-        <div className="admin-table-actions">
+        <div className="admin-table-actions admin-table-actions-compact">
           {employee.status !== 'approved' && (
             <button type="button" className="admin-action-approve" onClick={approve}>
               <FiUserCheck />
@@ -63,7 +64,11 @@ const UserRow = memo(function UserRow({ employee, performance, isPasswordVisible
 });
 
 function UserManagement() {
+  const navigate = useNavigate();
   const { adminUsers, approveEmployee, deactivateEmployee, resetEmployeePassword, forceEmployeePasswordReset } = useAuth();
+  const [isGoogleSheetsConnected, setIsGoogleSheetsConnected] = useState(
+    () => localStorage.getItem('tdt_google_sheets_connected') === 'true'
+  );
   const [query, setQuery] = useState('');
   const [department, setDepartment] = useState('all');
   const [role, setRole] = useState('all');
@@ -114,6 +119,30 @@ function UserManagement() {
     setNotice(result.message);
   }, [forceEmployeePasswordReset]);
 
+  const handleUploadSheets = useCallback(() => {
+    navigate('/upload');
+  }, [navigate]);
+
+  const handleDisconnectLive = useCallback(() => {
+    localStorage.removeItem('tdt_google_sheets_connected');
+    setIsGoogleSheetsConnected(false);
+    window.dispatchEvent(new Event('tdt-google-sheets-status'));
+    navigate('/upload');
+  }, [navigate]);
+
+  useEffect(() => {
+    const syncStatus = () => {
+      setIsGoogleSheetsConnected(localStorage.getItem('tdt_google_sheets_connected') === 'true');
+    };
+
+    window.addEventListener('storage', syncStatus);
+    window.addEventListener('tdt-google-sheets-status', syncStatus);
+    return () => {
+      window.removeEventListener('storage', syncStatus);
+      window.removeEventListener('tdt-google-sheets-status', syncStatus);
+    };
+  }, []);
+
   return (
     <section className="admin-panel-section">
       <div className="admin-section-header admin-management-topbar">
@@ -132,28 +161,48 @@ function UserManagement() {
       </div>
 
       <div className="admin-filter-bar">
-        <select value={department} onChange={updateFilter(setDepartment)}>
-          {departments.map(option => (
-            <option key={option} value={option}>{option === 'all' ? 'All Departments' : option}</option>
-          ))}
-        </select>
-        <select value={role} onChange={updateFilter(setRole)}>
-          <option value="all">All Roles</option>
-          <option value="employee">Employee</option>
-        </select>
-        <select value={status} onChange={updateFilter(setStatus)}>
-          <option value="all">All Statuses</option>
-          <option value="approved">Approved</option>
-          <option value="pending">Pending</option>
-          <option value="rejected">Rejected</option>
-          <option value="inactive">Inactive</option>
-        </select>
+        <div className="admin-filter-bar-filters">
+          <select value={department} onChange={updateFilter(setDepartment)}>
+            {departments.map(option => (
+              <option key={option} value={option}>{option === 'all' ? 'All Departments' : option}</option>
+            ))}
+          </select>
+          <select value={role} onChange={updateFilter(setRole)}>
+            <option value="all">All Roles</option>
+            <option value="employee">Employee</option>
+          </select>
+          <select value={status} onChange={updateFilter(setStatus)}>
+            <option value="all">All Statuses</option>
+            <option value="approved">Approved</option>
+            <option value="pending">Pending</option>
+            <option value="rejected">Rejected</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div className="admin-filter-bar-sync">
+          <button type="button" className="admin-sheets-upload-btn" onClick={handleUploadSheets}>
+            <FiUploadCloud />
+            Upload Google Sheets
+          </button>
+          {isGoogleSheetsConnected && (
+            <button
+              type="button"
+              className="admin-live-indicator"
+              onClick={handleDisconnectLive}
+              aria-label="Google Sheets live sync active. Click to disconnect."
+              title="Disconnect live sync"
+            >
+              <span className="admin-live-dot" aria-hidden="true" />
+              Live
+            </button>
+          )}
+        </div>
       </div>
 
       {notice && <div className="admin-password-notice">{notice}</div>}
 
-      <div className="admin-table-shell">
-        <table className="admin-table admin-user-management-table">
+      <div className="admin-table-shell table-wrapper">
+        <table className="admin-table admin-user-management-table user-table">
           <thead>
             <tr>
               <th>Avatar</th>

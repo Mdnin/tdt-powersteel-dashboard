@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { Camera, Save } from 'lucide-react';
+import { useRef, useState, useMemo } from 'react';
+import { Camera, Save, X } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import StatusBadge from '../components/common/StatusBadge';
 import { baseSalesReps } from '../data/salesRepData';
@@ -8,6 +8,8 @@ import '../styles/profile.css';
 
 export default function Profile() {
   const { user, updateProfile } = useAuth();
+  const cropFileInputRef = useRef(null);
+  const cropDragRef = useRef(null);
   const [form, setForm] = useState(() => ({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -16,6 +18,8 @@ export default function Profile() {
     avatar: user?.avatar || ''
   }));
   const [message, setMessage] = useState('');
+  const [cropImage, setCropImage] = useState('');
+  const [crop, setCrop] = useState({ x: 0, y: 0, zoom: 1 });
 
   const initials = useMemo(() => {
     const first = form.firstName?.slice(0, 1) || user?.name?.slice(0, 1) || 'U';
@@ -37,9 +41,74 @@ export default function Profile() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      setForm(current => ({ ...current, avatar: reader.result }));
+      setCropImage(reader.result);
+      setCrop({ x: 0, y: 0, zoom: 1 });
     };
     reader.readAsDataURL(file);
+    event.target.value = '';
+  };
+
+  const closeCropModal = () => {
+    setCropImage('');
+    setCrop({ x: 0, y: 0, zoom: 1 });
+  };
+
+  const startCropDrag = event => {
+    cropDragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      cropX: crop.x,
+      cropY: crop.y
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const moveCropDrag = event => {
+    const drag = cropDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+
+    setCrop(current => ({
+      ...current,
+      x: Math.max(-90, Math.min(90, drag.cropX + event.clientX - drag.startX)),
+      y: Math.max(-90, Math.min(90, drag.cropY + event.clientY - drag.startY))
+    }));
+  };
+
+  const endCropDrag = event => {
+    if (cropDragRef.current?.pointerId === event.pointerId) {
+      cropDragRef.current = null;
+    }
+  };
+
+  const saveCroppedAvatar = () => {
+    if (!cropImage) return;
+
+    const image = new Image();
+    image.onload = () => {
+      const outputSize = 320;
+      const previewSize = 220;
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      const baseScale = Math.max(outputSize / image.width, outputSize / image.height);
+      const scaledWidth = image.width * baseScale * crop.zoom;
+      const scaledHeight = image.height * baseScale * crop.zoom;
+      const dragScale = outputSize / previewSize;
+
+      canvas.width = outputSize;
+      canvas.height = outputSize;
+      context.drawImage(
+        image,
+        (outputSize - scaledWidth) / 2 + crop.x * dragScale,
+        (outputSize - scaledHeight) / 2 + crop.y * dragScale,
+        scaledWidth,
+        scaledHeight
+      );
+
+      setForm(current => ({ ...current, avatar: canvas.toDataURL('image/png') }));
+      closeCropModal();
+    };
+    image.src = cropImage;
   };
 
   const handleSubmit = event => {
@@ -60,43 +129,97 @@ export default function Profile() {
       </div>
 
       <form className="profile-card" onSubmit={handleSubmit}>
-        <div className="profile-avatar-editor">
-          <div className="profile-avatar-preview">
-            {form.avatar ? <img src={form.avatar} alt="" /> : <span>{initials}</span>}
+        <div className="profile-management-layout">
+          <div className="profile-avatar-editor">
+            <div className="profile-avatar-preview">
+              {form.avatar ? <img src={form.avatar} alt="" /> : <span>{initials}</span>}
+            </div>
+            <label className="profile-avatar-upload">
+              <Camera size={16} />
+              Upload avatar
+              <input ref={cropFileInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} />
+            </label>
           </div>
-          <label className="profile-avatar-upload">
-            <Camera size={16} />
-            Upload avatar
-            <input type="file" accept="image/*" onChange={handleAvatarUpload} />
-          </label>
+
+          <div className="profile-form-panel">
+            <div className="profile-fields profile-form-grid">
+              <label>
+                <span>First name</span>
+                <input value={form.firstName} onChange={updateField('firstName')} />
+              </label>
+              <label>
+                <span>Last name</span>
+                <input value={form.lastName} onChange={updateField('lastName')} />
+              </label>
+              <label>
+                <span>Position</span>
+                <input value={form.position} onChange={updateField('position')} />
+              </label>
+              <label>
+                <span>Department</span>
+                <input value={form.department} onChange={updateField('department')} />
+              </label>
+            </div>
+
+            {message && <p className="profile-save-message">{message}</p>}
+
+            <div className="profile-actions">
+              <button className="profile-save-btn" type="submit">
+                <Save size={16} />
+                Save Profile
+              </button>
+            </div>
+          </div>
         </div>
-
-        <div className="profile-form-grid">
-          <label>
-            <span>First name</span>
-            <input value={form.firstName} onChange={updateField('firstName')} />
-          </label>
-          <label>
-            <span>Last name</span>
-            <input value={form.lastName} onChange={updateField('lastName')} />
-          </label>
-          <label>
-            <span>Position</span>
-            <input value={form.position} onChange={updateField('position')} />
-          </label>
-          <label>
-            <span>Department</span>
-            <input value={form.department} onChange={updateField('department')} />
-          </label>
-        </div>
-
-        {message && <p className="profile-save-message">{message}</p>}
-
-        <button className="profile-save-btn" type="submit">
-          <Save size={16} />
-          Save Profile
-        </button>
       </form>
+
+      {cropImage && (
+        <div className="profile-crop-backdrop" role="presentation" onMouseDown={closeCropModal}>
+          <div className="profile-crop-modal" role="dialog" aria-modal="true" onMouseDown={event => event.stopPropagation()}>
+            <div className="profile-crop-header">
+              <div>
+                <span>Avatar crop</span>
+                <strong>Position image</strong>
+              </div>
+              <button type="button" onClick={closeCropModal} aria-label="Close avatar cropper">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div
+              className="profile-crop-stage"
+              onPointerDown={startCropDrag}
+              onPointerMove={moveCropDrag}
+              onPointerUp={endCropDrag}
+              onPointerCancel={endCropDrag}
+            >
+              <img
+                src={cropImage}
+                alt=""
+                draggable="false"
+                style={{ transform: `translate(${crop.x}px, ${crop.y}px) scale(${crop.zoom})` }}
+              />
+            </div>
+
+            <label className="profile-crop-zoom">
+              <span>Zoom</span>
+              <input
+                type="range"
+                min="1"
+                max="1.8"
+                step="0.01"
+                value={crop.zoom}
+                onChange={event => setCrop(current => ({ ...current, zoom: Number(event.target.value) }))}
+              />
+            </label>
+
+            <div className="profile-crop-actions">
+              <button type="button" className="profile-crop-secondary" onClick={closeCropModal}>Cancel</button>
+              <button type="button" className="profile-save-btn" onClick={saveCroppedAvatar}>Save avatar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

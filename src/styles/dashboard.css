@@ -1,6 +1,6 @@
 .dashboard-page {
   display: grid;
-  grid-template-columns: var(--sidebar-width, 240px) minmax(0, 1fr);
+  grid-template-columns: var(--sidebar-width, 290px) minmax(0, 1fr);
   width: 100%;
   height: 100vh;
   min-height: 0;
@@ -13,16 +13,25 @@
 }
 
 .dashboard-content {
+  width: 100%;
   min-width: 0;
   height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 14px 16px 16px;
+  padding: 18px;
+  gap: 18px;
   position: relative;
   z-index: 10;
   scrollbar-width: thin;
   scrollbar-color: rgba(255,122,0,0.45) rgba(255,255,255,0.04);
   max-width: 100%;
+  box-sizing: border-box;
+}
+
+.main-dashboard {
+  width: 100%;
+  max-width: 100%;
+  padding-right: 18px;
   box-sizing: border-box;
 }
 
@@ -38,21 +47,21 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
-  margin: 12px 0 12px;
+  margin: 18px 0 14px;
   min-width: 0;
 }
 
 .dashboard-title {
   color: #ff8a1f;
-  font-size: clamp(24px, 2vw, 30px);
+  font-size: clamp(26px, 2.15vw, 34px);
   line-height: 1.05;
   font-weight: 800;
   margin: 0;
 }
 
 .dashboard-subtitle {
-  color: rgba(255,255,255,0.66);
-  font-size: 13px;
+  color: rgba(255,255,255,0.56);
+  font-size: 12px;
   line-height: 1.45;
   margin: 0;
   max-width: min(520px, 100%);
@@ -64,38 +73,82 @@
   overflow: hidden;
 }
 
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+.metric-wrapper {
+  width: 100%;
+  overflow: hidden;
   position: relative;
   z-index: 5;
-  width: 100%;
-  max-width: 100%;
   box-sizing: border-box;
-  overflow-x: visible;
+  padding: 4px 0 24px;
+}
+
+.metric-track {
+  display: flex;
+  align-items: stretch;
+  width: max-content;
+  gap: 16px;
+  animation: metricTicker 32s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.metric-track:hover {
+  animation-play-state: paused;
+}
+
+.metric-set {
+  display: flex;
+  gap: 16px;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.metric-loop-item {
+  flex: 0 0 auto;
+  width: 360px;
+  min-width: 360px;
+}
+
+@keyframes metricTicker {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 .charts-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.85fr);
-  gap: 12px;
-  margin-top: 12px;
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+  gap: 18px;
+  margin-top: 18px;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   overflow-x: visible;
 }
 
+.chart-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+  gap: 18px;
+}
+
 .table-section {
-  margin-top: 12px;
-  background: rgba(8,8,8,0.84);
+  margin-top: 18px;
+  background: rgba(15,15,15,0.92);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255,122,0,0.22);
-  border-radius: 14px;
-  padding: 12px;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,140,0,0.18);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.16);
   position: relative;
   overflow: hidden;
 }
@@ -107,7 +160,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, rgba(255,122,0,0.85), rgba(255,179,71,0.55));
+  background: linear-gradient(90deg, rgba(255,122,0,0.56), rgba(255,179,71,0.24));
 }
 
 .table-section .table-glass-inner {
@@ -133,14 +186,18 @@
 
 @media (max-width: 1180px) {
   .dashboard-page {
-    grid-template-columns: 210px minmax(0, 1fr);
+    grid-template-columns: var(--sidebar-width, 290px) minmax(0, 1fr);
   }
 
-  .metrics-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .metric-track {
+    animation-duration: 36s;
   }
 
   .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -170,8 +227,26 @@
     -webkit-line-clamp: 3;
   }
 
-  .metrics-grid {
+  .metric-track {
+    display: block;
+    width: 100%;
+    animation: none;
+    will-change: auto;
+  }
+
+  .metric-set {
+    display: grid;
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .metric-loop-item {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .metric-set[aria-hidden='true'] {
+    display: none;
   }
 }
 

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import logo from '../assets/logos/tdt_logo.png';
 import { useAuth } from '../auth/AuthContext';
 import PasswordField from '../components/common/PasswordField';
+import TeamCredits from '../components/common/TeamCredits';
 import { PASSWORD_MIN_LENGTH, updateUserPasswordByIdentity } from '../auth/authService';
 import '../styles/auth.css';
 
@@ -22,6 +23,7 @@ export default function Login() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [isTeamPanelOpen, setIsTeamPanelOpen] = useState(false);
   const [passwordNotice, setPasswordNotice] = useState({ message: '', tone: 'success' });
   const [passwordForm, setPasswordForm] = useState({
     email: '',
@@ -85,49 +87,49 @@ export default function Login() {
       <div className="auth-ambient-glow" />
 
       <motion.div className="auth-page" variants={pageMotion} initial="hidden" animate="visible">
-        <div className="auth-container">
-          <section className="auth-panel left">
-            <div className="auth-branding">
-              <img src={logo} alt="TDT Powersteel" className="auth-logo" />
-              <div className="auth-brand-copy">
+        <div className="auth-container auth-layout">
+          <section className="auth-panel left auth-left">
+            <div className="auth-content">
+              <div className="auth-branding">
                 <span className="auth-label">Sales Performance System</span>
+                <img src={logo} alt="TDT logo" className="auth-logo" />
                 <p>Advanced Lead Tracking & Revenue Analytics</p>
               </div>
-            </div>
 
-            <form className="auth-form" onSubmit={handleSubmit}>
-              <div className="auth-field">
-                <span>EMAIL OR NAME</span>
-                <input value={identity} onChange={e => setIdentity(e.target.value)} placeholder="Enter Email or Name" required />
-              </div>
-              <div className="auth-field">
-                <span>PASSWORD</span>
-                <PasswordField
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  required
-                  autoComplete="current-password"
-                />
-              </div>
-              {error && <p className="auth-form-feedback auth-form-feedback-error">{error}</p>}
-              <div className="auth-options-row">
-                <label className="auth-checkbox">
-                  <input type="checkbox" checked={remember} onChange={() => setRemember(!remember)} />
-                  Remember me
-                </label>
-                <button className="auth-change-password-link" type="button" onClick={openPasswordModal}>Change Password</button>
-              </div>
-              <div className="auth-action-row">
-                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="primary-btn" type="submit" disabled={busy}>
-                  {busy ? 'AUTHENTICATING...' : 'LOGIN'}
-                </motion.button>
-                <Link to="/signup" className="auth-alt-link auth-bottom-link">Create account</Link>
-              </div>
-            </form>
+              <form className="auth-form" onSubmit={handleSubmit}>
+                <div className="auth-field">
+                  <span>EMAIL OR NAME</span>
+                  <input value={identity} onChange={e => setIdentity(e.target.value)} placeholder="Enter Email or Name" required />
+                </div>
+                <div className="auth-field">
+                  <span>PASSWORD</span>
+                  <PasswordField
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    required
+                    autoComplete="current-password"
+                  />
+                </div>
+                {error && <p className="auth-form-feedback auth-form-feedback-error">{error}</p>}
+                <div className="auth-options-row">
+                  <label className="auth-checkbox">
+                    <input type="checkbox" checked={remember} onChange={() => setRemember(!remember)} />
+                    Remember me
+                  </label>
+                  <button className="auth-change-password-link" type="button" onClick={openPasswordModal}>Change Password</button>
+                </div>
+                <div className="auth-action-row">
+                  <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="primary-btn" type="submit" disabled={busy}>
+                    {busy ? 'AUTHENTICATING...' : 'LOGIN'}
+                  </motion.button>
+                  <Link to="/signup" className="auth-alt-link auth-bottom-link">Create account</Link>
+                </div>
+              </form>
+            </div>
           </section>
 
-          <section className="auth-panel right">
+          <section className="auth-panel right auth-right">
             <Suspense fallback={<div className="qr-scanner-fallback" />}>
               <QRScanner title="Scan Your QR Code" subtitle="Align your employee QR code inside the scanner frame" />
             </Suspense>
@@ -199,6 +201,11 @@ export default function Login() {
           </motion.form>
         </div>
       )}
+
+      <button className="login-team-credit" type="button" onClick={() => setIsTeamPanelOpen(true)}>
+        System Development Team
+      </button>
+      <TeamCredits isOpen={isTeamPanelOpen} onClose={() => setIsTeamPanelOpen(false)} />
     </div>
   );
 }

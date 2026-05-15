@@ -1,8 +1,14 @@
 export const metricCards = [
-  { metric: 'leads', title: 'Leads Gathered', value: '1,248', trend: 'up', trendValue: '+12.5%', icon: 'users' },
-  { metric: 'sales', title: 'Gross Sales', value: 'PHP 2.1M', trend: 'up', trendValue: '+8.2%', icon: 'dollar' },
-  { metric: 'reps', title: 'Sales Reps', value: '18', trend: 'up', trendValue: '+2', icon: 'target' },
-  { metric: 'deals', title: 'Closed Deals', value: '324', trend: 'down', trendValue: '-3.1%', icon: 'chart' }
+  { metric: 'sales', title: 'Total Gross Sales', value: 'PHP 2.1M', trend: 'up', trendValue: '+8.2%', icon: 'dollar' },
+  { metric: 'gk', title: 'Total GK', value: 'PHP 418K', trend: 'up', trendValue: '+6.9%', icon: 'chart' },
+  { metric: 'leads', title: 'Total Leads Gathered', value: '1,248', trend: 'up', trendValue: '+12.5%', icon: 'users' },
+  { metric: 'deals', title: 'Closed Deals', value: '324', trend: 'down', trendValue: '-3.1%', icon: 'target' },
+  { metric: 'conversion', title: 'Sales Conversion Rate', value: '25.9%', trend: 'up', trendValue: '+2.4%', icon: 'chart' },
+  { metric: 'active-reps', title: 'Active Sales Reps', value: '18', trend: 'up', trendValue: '+2', icon: 'users' },
+  { metric: 'avg-rep', title: 'Average Sales per Rep', value: 'PHP 117K', trend: 'up', trendValue: '+5.1%', icon: 'dollar' },
+  { metric: 'growth', title: 'Monthly Sales Growth %', value: '8.2%', trend: 'up', trendValue: '+1.8%', icon: 'chart' },
+  { metric: 'clients', title: 'Total Clients', value: '486', trend: 'up', trendValue: '+34', icon: 'users' },
+  { metric: 'top-rep', title: 'Top Performing Rep', value: 'Ana Reyes', trend: 'up', trendValue: '94%', icon: 'target' }
 ];
 
 export const monthlySalesPerformance = [

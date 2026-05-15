@@ -2,22 +2,20 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { FiChevronUp, FiGrid, FiLogOut, FiMenu, FiPieChart, FiSettings, FiUsers, FiBarChart2, FiUser, FiShield, FiUserCheck } from 'react-icons/fi';
+import { FiBarChart2, FiChevronUp, FiGrid, FiLogOut, FiMenu, FiSettings, FiUsers, FiUser, FiShield } from 'react-icons/fi';
 import { useAuth } from '../../auth/AuthContext';
 import '../../styles/sidebar.css';
 
 import logo from '../../assets/logos/tdt_logo.png';
 
-const navItems = [
+const mainNavItems = [
   { path: '/dashboard', label: 'Dashboard', Icon: FiGrid },
-  { path: '/lead-sources', label: 'Lead Sources', Icon: FiPieChart },
-  { path: '/sales-reps', label: 'Sales Reps', Icon: FiUsers },
-  { path: '/reports', label: 'Reports', Icon: FiBarChart2 }
+  { path: '/analytics', label: 'Analytics', Icon: FiBarChart2 },
+  { path: '/sales-team', label: 'Sales Team', Icon: FiUsers }
 ];
 
 const adminNavItems = [
   { path: '/admin', label: 'Admin Panel', Icon: FiShield },
-  { path: '/admin/pending-approvals', label: 'Pending Approvals', Icon: FiUserCheck },
   { path: '/admin/users', label: 'User Management', Icon: FiUsers }
 ];
 
@@ -26,7 +24,9 @@ const SidebarNavItem = memo(function SidebarNavItem({ path, label, Icon }) {
     <NavLink
       to={path}
       end
-      className={({ isActive }) => (isActive ? 'sidebar-link active' : 'sidebar-link')}
+      className={({ isActive }) => (
+        `sidebar-link sidebar-nav-button sidebar-button sidebar-main-button${isActive ? ' active' : ''}`
+      )}
     >
       <span className="sidebar-link-icon">
         <Icon />
@@ -38,7 +38,7 @@ const SidebarNavItem = memo(function SidebarNavItem({ path, label, Icon }) {
 
 const SidebarSectionLabel = memo(function SidebarSectionLabel({ children }) {
   return (
-    <div className="sidebar-section-label">
+    <div className="sidebar-section-label sidebar-section-title">
       <span>{children}</span>
     </div>
   );
@@ -147,7 +147,7 @@ function Sidebar({ isOpen, onToggle, onOpenSettings, onOpenLogout }) {
   );
 
   return (
-    <aside className={`sidebar ${isOpen ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
+    <aside className={`sidebar sidebar-container ${isOpen ? 'sidebar-expanded' : 'sidebar-collapsed sidebar-mini'}`}>
       <button type="button" className="sidebar-toggle" onClick={onToggle} aria-label="Toggle sidebar">
         <FiMenu />
       </button>
@@ -156,10 +156,9 @@ function Sidebar({ isOpen, onToggle, onOpenSettings, onOpenLogout }) {
         <img src={logo} alt="TDT logo" className="sidebar-logo" />
       </div>
 
-      <nav className="sidebar-menu">
-        <div className="sidebar-nav-section">
-          <SidebarSectionLabel>Main Navigation</SidebarSectionLabel>
-          {navItems.map(({ path, label, Icon }) => (
+      <nav className="sidebar-menu sidebar-scroll">
+        <div className="sidebar-nav-section sidebar-primary-nav">
+          {mainNavItems.map(({ path, label, Icon }) => (
             <SidebarNavItem
               key={path}
               path={path}
@@ -171,7 +170,7 @@ function Sidebar({ isOpen, onToggle, onOpenSettings, onOpenLogout }) {
 
         {isAdmin && (
           <div className="sidebar-nav-section sidebar-admin-section">
-            <SidebarSectionLabel>Admin Tools</SidebarSectionLabel>
+            <SidebarSectionLabel>Admin</SidebarSectionLabel>
             {adminNavItems.map(({ path, label, Icon }) => (
               <SidebarNavItem
                 key={path}
@@ -187,17 +186,19 @@ function Sidebar({ isOpen, onToggle, onOpenSettings, onOpenLogout }) {
       <div className="sidebar-profile-zone" ref={profileZoneRef}>
         <button
           type="button"
-          className="sidebar-profile-trigger"
+          className="sidebar-profile-trigger sidebar-profile profile-card"
           onClick={toggleProfileMenu}
           aria-haspopup="menu"
           aria-expanded={isProfileMenuOpen}
         >
-          <span className="sidebar-profile-avatar">
+          <span className="sidebar-profile-avatar profile-avatar">
             {user?.avatar ? <img src={user.avatar} alt="" /> : <FiUser />}
           </span>
           <span className="sidebar-profile-copy">
-            <strong>{user?.name || 'Operations Lead'}</strong>
-            <small className={`sidebar-role-badge ${isAdmin ? 'sidebar-role-admin' : 'sidebar-role-employee'}`}>{roleLabel}</small>
+            <strong className="profile-name">{roleLabel}</strong>
+            <small className={`sidebar-role-badge profile-role ${isAdmin ? 'sidebar-role-admin' : 'sidebar-role-employee'}`}>
+              {isAdmin ? 'Executive Ops' : (user?.position || user?.name || 'Sales Ops')}
+            </small>
           </span>
           <span className={`sidebar-profile-chevron ${isProfileMenuOpen ? 'open' : ''}`}>
             <FiChevronUp size={16} />

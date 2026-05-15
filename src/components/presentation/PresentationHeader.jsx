@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Minimize2, Radio } from 'lucide-react';
 import logo from '../../assets/logos/tdt_logo.png';
 
-export default function PresentationHeader({ dateRange, onExit }) {
+export default function PresentationHeader({ dateRange, onExit, refreshLabel = 'Live sync active' }) {
   return (
     <motion.header
       className="presentation-header"
@@ -22,7 +22,8 @@ export default function PresentationHeader({ dateRange, onExit }) {
         <span className="presentation-live-dot">
           <Radio size={14} />
         </span>
-        <span>LIVE DASHBOARD</span>
+        <span>LIVE PRESENT</span>
+        <small>{refreshLabel}</small>
       </div>
 
       <div className="presentation-header-right">

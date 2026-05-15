@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion';
+import { EnterpriseChart, EnterpriseFilters } from '../components/analytics/EnterpriseWidgets';
+import { termsData } from '../data/enterpriseAnalytics';
 import '../styles/dashboard.css';
+import '../styles/enterprise.css';
 
 export default function RepData() {
   const itemVariants = {
@@ -19,24 +22,19 @@ export default function RepData() {
           initial="hidden"
           animate="visible"
         >
-          <h1 className="dashboard-title">Reports & Analytics</h1>
+          <h1 className="dashboard-title">Terms Analytics</h1>
           <p className="dashboard-subtitle">
-            Generate comprehensive reports and analyze business performance data
+            Terms distribution, sales per terms, most used terms, and GK per terms
           </p>
         </motion.div>
 
-        <motion.div
-          className="content-placeholder"
-          variants={itemVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <div style={{ textAlign: 'center', color: '#888' }}>
-            <h2 style={{ color: '#ff7a00', marginBottom: '16px' }}>Reports Page</h2>
-            <p>This page will contain reporting tools and analytics dashboards.</p>
-            <p style={{ marginTop: '8px', fontSize: '14px' }}>Coming soon...</p>
-          </div>
-        </motion.div>
+        <EnterpriseFilters />
+        <section className="enterprise-grid enterprise-grid-two">
+          <EnterpriseChart title="Terms Distribution" subtitle="Usage count for FT, REP, 1DLM, 1Aga, 1Mrky, and 1Mldy" data={termsData} keys={['count']} />
+          <EnterpriseChart title="Sales per Terms" subtitle="Gross sales grouped by terms" data={termsData} keys={['sales']} />
+          <EnterpriseChart title="Most Used Terms" subtitle="Highest transaction count by terms" type="pie" data={termsData.map(item => ({ name: item.label, value: item.count }))} />
+          <EnterpriseChart title="GK per Terms" subtitle="Gross kita contribution per terms" data={termsData} keys={['gk']} />
+        </section>
     </>
   );
 }

@@ -130,9 +130,9 @@ export default function SalesRep() {
         initial="hidden"
         animate="visible"
       >
-        <h1 className="dashboard-title">Sales Leaderboard</h1>
+        <h1 className="dashboard-title">Sales Team</h1>
         <p className="dashboard-subtitle">
-          Full representative rankings with live movement, conversion, and performance signals
+          Rankings, rep performance, conversion rate, and team activity in one page
         </p>
       </motion.div>
 

@@ -17,7 +17,9 @@ import {
   YAxis
 } from 'recharts';
 
-const orange = '#ff7a00';
+const orange = '#ffb15a';
+const actualSalesColor = '#D16002';
+const targetSalesColor = '#CC5500';
 const amber = '#ffb347';
 const muted = 'rgba(255,255,255,0.62)';
 const smallAxisTick = { fill: muted, fontSize: 10 };
@@ -136,7 +138,7 @@ function KPIChart({ insight }) {
           </defs>
           <XAxis dataKey="label" tick={smallAxisTick} axisLine={false} tickLine={false} />
           <YAxis hide domain={['dataMin - 10', 'dataMax + 10']} />
-          <Tooltip content={tooltipElement} cursor={{ stroke: 'rgba(255,122,0,0.18)' }} />
+          <Tooltip content={tooltipElement} cursor={{ stroke: 'rgba(255,177,90,0.12)' }} />
           <Line
             type="monotone"
             dataKey="leads"
@@ -157,14 +159,14 @@ function KPIChart({ insight }) {
         <BarChart data={insight.data} margin={barMargin}>
           <defs>
             <linearGradient id="salesBarGlow" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor={amber} />
-              <stop offset="100%" stopColor={orange} />
+              <stop offset="0%" stopColor={actualSalesColor} />
+              <stop offset="100%" stopColor={actualSalesColor} stopOpacity={0.78} />
             </linearGradient>
           </defs>
           <XAxis dataKey="label" tick={smallAxisTick} axisLine={false} tickLine={false} />
           <YAxis hide />
-          <Tooltip content={tooltipElement} cursor={{ fill: 'rgba(255,122,0,0.08)' }} />
-          <Bar dataKey="target" fill="rgba(255,255,255,0.16)" radius={[5, 5, 0, 0]} animationDuration={240} />
+          <Tooltip content={tooltipElement} cursor={{ fill: 'rgba(209,96,2,0.06)' }} />
+          <Bar dataKey="target" fill={targetSalesColor} opacity={0.62} radius={[5, 5, 0, 0]} animationDuration={240} />
           <Bar dataKey="revenue" fill="url(#salesBarGlow)" radius={[5, 5, 0, 0]} animationDuration={280} />
         </BarChart>
       </ResponsiveContainer>
@@ -177,7 +179,7 @@ function KPIChart({ insight }) {
         <AreaChart data={insight.data} layout="vertical" margin={areaMargin}>
           <defs>
             <linearGradient id="repAreaGlow" x1="0" x2="1" y1="0" y2="0">
-              <stop offset="0%" stopColor="rgba(255,122,0,0.18)" />
+              <stop offset="0%" stopColor="rgba(255,177,90,0.10)" />
               <stop offset="100%" stopColor="rgba(255,179,71,0.9)" />
             </linearGradient>
           </defs>
@@ -190,7 +192,7 @@ function KPIChart({ insight }) {
             axisLine={false}
             tickLine={false}
           />
-          <Tooltip content={tooltipElement} cursor={{ fill: 'rgba(255,122,0,0.08)' }} />
+          <Tooltip content={tooltipElement} cursor={{ fill: 'rgba(255,177,90,0.06)' }} />
           <Area
             dataKey="score"
             type="monotone"

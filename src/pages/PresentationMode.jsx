@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Area,
   AreaChart,
@@ -42,6 +43,22 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function PresentationMode({ onExit }) {
+  const [cycleIndex, setCycleIndex] = useState(0);
+  const [refreshCount, setRefreshCount] = useState(0);
+  const refreshLabel = useMemo(
+    () => `Auto-refresh ${refreshCount + 1} · real-time sync`,
+    [refreshCount]
+  );
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setCycleIndex(current => (current + 1) % 5);
+      setRefreshCount(current => (current + 1) % 9);
+    }, 4200);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
   return (
     <motion.div
       className="presentation-shell"
@@ -50,7 +67,7 @@ export default function PresentationMode({ onExit }) {
       exit={{ opacity: 0, scale: 0.985 }}
       transition={{ duration: 0.32, ease: 'easeOut' }}
     >
-      <PresentationHeader dateRange="Reporting Period: Jan - Jun 2026" onExit={onExit} />
+      <PresentationHeader dateRange="Reporting Period: Jan - Jun 2026" onExit={onExit} refreshLabel={refreshLabel} />
       <PresentationMetrics metrics={presentationMetrics} />
 
       <motion.main
@@ -62,7 +79,7 @@ export default function PresentationMode({ onExit }) {
           visible: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
         }}
       >
-        <motion.section className="presentation-panel presentation-main-chart" variants={panelVariant}>
+        <motion.section className={`presentation-panel presentation-main-chart ${cycleIndex === 0 ? 'presentation-panel-live' : ''}`} variants={panelVariant}>
           <PanelHeader title="Gross Sales Momentum" subtitle="Sales value, lead volume, and target pace" />
           <div className="presentation-chart-fill">
             <ResponsiveContainer width="100%" height="100%">
@@ -73,14 +90,14 @@ export default function PresentationMode({ onExit }) {
                 <YAxis yAxisId="right" orientation="right" stroke="#a7a7a7" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip content={<CustomTooltip />} />
                 <Area yAxisId="left" type="monotone" dataKey="leads" name="Leads" fill="#ff7a00" fillOpacity={0.12} stroke="#ff9f43" strokeWidth={2} animationDuration={550} />
-                <Bar yAxisId="right" dataKey="target" name="Target" fill="#2a2a2a" radius={[6, 6, 0, 0]} animationDuration={450} />
-                <Line yAxisId="right" type="monotone" dataKey="sales" name="Sales" stroke="#ff7a00" strokeWidth={3} dot={{ r: 4, fill: '#ff7a00' }} animationDuration={600} />
+                <Bar yAxisId="right" dataKey="target" name="Target" fill="#CC5500" opacity={0.62} radius={[6, 6, 0, 0]} animationDuration={450} />
+                <Line yAxisId="right" type="monotone" dataKey="sales" name="Sales" stroke="#D16002" strokeWidth={3} dot={{ r: 4, fill: '#D16002' }} animationDuration={600} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
         </motion.section>
 
-        <motion.section className="presentation-panel presentation-source-panel" variants={panelVariant}>
+        <motion.section className={`presentation-panel presentation-source-panel ${cycleIndex === 1 ? 'presentation-panel-live' : ''}`} variants={panelVariant}>
           <PanelHeader title="Source Breakdown" subtitle="Lead channel contribution" />
           <div className="presentation-source-list">
             {presentationSourceData.map(source => (
@@ -97,7 +114,7 @@ export default function PresentationMode({ onExit }) {
           </div>
         </motion.section>
 
-        <motion.section className="presentation-panel" variants={panelVariant}>
+        <motion.section className={`presentation-panel ${cycleIndex === 2 ? 'presentation-panel-live' : ''}`} variants={panelVariant}>
           <PanelHeader title="Lead Velocity" subtitle="Monthly gathered leads" />
           <div className="presentation-chart-fill">
             <ResponsiveContainer width="100%" height="100%">
@@ -112,7 +129,7 @@ export default function PresentationMode({ onExit }) {
           </div>
         </motion.section>
 
-        <motion.section className="presentation-panel" variants={panelVariant}>
+        <motion.section className={`presentation-panel ${cycleIndex === 3 ? 'presentation-panel-live' : ''}`} variants={panelVariant}>
           <PanelHeader title="Lead Mix" subtitle="Conversion source profile" />
           <div className="presentation-chart-fill">
             <ResponsiveContainer width="100%" height="100%">
@@ -128,7 +145,7 @@ export default function PresentationMode({ onExit }) {
           </div>
         </motion.section>
 
-        <motion.section className="presentation-panel presentation-ranking-panel" variants={panelVariant}>
+        <motion.section className={`presentation-panel presentation-ranking-panel ${cycleIndex === 4 ? 'presentation-panel-live' : ''}`} variants={panelVariant}>
           <PanelHeader title="Sales Rep Rankings" subtitle="Top activity and revenue performers" />
           <div className="presentation-ranking-table">
             {presentationRepData.map(rep => (

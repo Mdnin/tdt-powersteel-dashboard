@@ -89,6 +89,100 @@
     rgba(10,10,10,0.86);
 }
 
+.live-btn,
+.live-button {
+  position: relative;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(0,255,120,0.18),
+      rgba(0,255,120,0.08)
+    );
+  border: 1px solid rgba(0,255,120,0.45);
+  color: #7dffb5;
+  box-shadow: 0 0 18px rgba(0,255,120,0.18);
+  overflow: hidden;
+  padding-left: 30px;
+  min-width: 78px;
+  transition: transform 180ms ease, border-color 250ms ease, background-color 250ms ease, box-shadow 250ms ease, color 250ms ease, min-width 250ms ease;
+}
+
+.live-btn::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #00ff99;
+  border-radius: 50%;
+  left: 14px;
+  top: 50%;
+  --live-pulse-rest: translateY(-50%) scale(0.86);
+  --live-pulse-active: translateY(-50%) scale(1);
+  transform: translateY(-50%);
+  animation: livePulse 1.8s infinite;
+  box-shadow: 0 0 12px rgba(0,255,153,0.62);
+  transition: background-color 250ms ease, box-shadow 250ms ease;
+}
+
+.live-btn-label,
+.live-btn-hover-label {
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.live-btn-hover-label {
+  position: absolute;
+  left: 30px;
+  right: 12px;
+  opacity: 0;
+  transform: translateY(4px);
+  font-size: 11px;
+}
+
+.live-btn:hover {
+  min-width: 178px;
+}
+
+.live-btn:hover .live-btn-label {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.live-btn:hover .live-btn-hover-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.live-btn:hover,
+.live-button-active:hover {
+  color: #ff7272;
+  border-color: rgba(255,70,70,0.45);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,60,60,0.16),
+      rgba(90,8,8,0.22)
+    );
+  box-shadow: 0 0 18px rgba(255,70,70,0.22), inset 0 1px 0 rgba(255,255,255,0.035);
+}
+
+.live-btn:hover::before {
+  background: #ff4d4d;
+  box-shadow: 0 0 12px rgba(255,70,70,0.72);
+}
+
+@keyframes livePulse {
+  0%,
+  100% {
+    opacity: 0.62;
+    transform: var(--live-pulse-rest, translateY(-50%) scale(0.86));
+  }
+
+  50% {
+    opacity: 1;
+    transform: var(--live-pulse-active, translateY(-50%) scale(1));
+  }
+}
+
 .settings-backdrop {
   position: fixed;
   inset: 0;
@@ -446,7 +540,7 @@
     width: 100%;
     justify-content: stretch;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
     gap: 8px;
   }
 

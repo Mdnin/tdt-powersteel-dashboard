@@ -59,79 +59,74 @@ export default function Signup() {
       <div className="auth-ambient-glow" />
 
       <motion.div className="auth-page" variants={pageMotion} initial="hidden" animate="visible">
-        <div className="auth-container">
-          <section className="auth-panel left">
-            <div className="auth-branding">
-              <img src={logo} alt="TDT Powersteel" className="auth-logo" />
-              <div className="auth-brand-copy">
+        <div className="auth-container auth-layout">
+          <section className="auth-panel left auth-left">
+            <div className="auth-content">
+              <div className="auth-branding">
                 <span className="auth-label">Sales Performance System</span>
+                <img src={logo} alt="TDT logo" className="auth-logo" />
                 <p>Advanced Lead Tracking & Revenue Analytics</p>
               </div>
-            </div>
 
-            <div className="auth-form-header">
-              <span className="auth-section-label">Enterprise Enrollment</span>
-              <h2>Create Account</h2>
-            </div>
-
-            <form className="auth-form" onSubmit={handleSubmit}>
-              <div className="auth-row">
-                <div className="auth-field">
-                  <label>FIRST NAME</label>
-                  <input type="text" placeholder="John" value={firstName} onChange={event => setFirstName(event.target.value)} required />
+              <form className="auth-form" onSubmit={handleSubmit}>
+                <div className="auth-row">
+                  <div className="auth-field">
+                    <label>FIRST NAME</label>
+                    <input type="text" placeholder="John" value={firstName} onChange={event => setFirstName(event.target.value)} required />
+                  </div>
+                  <div className="auth-field">
+                    <label>LAST NAME</label>
+                    <input type="text" placeholder="Doe" value={lastName} onChange={event => setLastName(event.target.value)} required />
+                  </div>
                 </div>
                 <div className="auth-field">
-                  <label>LAST NAME</label>
-                  <input type="text" placeholder="Doe" value={lastName} onChange={event => setLastName(event.target.value)} required />
+                  <label>EMAIL</label>
+                  <input type="email" placeholder="john@email.com" value={email} onChange={event => setEmail(event.target.value)} required />
                 </div>
-              </div>
-              <div className="auth-field">
-                <label>EMAIL</label>
-                <input type="email" placeholder="john@email.com" value={email} onChange={event => setEmail(event.target.value)} required />
-              </div>
-              <div className="auth-field">
-                <label>DEPARTMENT</label>
-                <input type="text" placeholder="Sales Department" value={department} onChange={event => setDepartment(event.target.value)} required />
-              </div>
-              <div className="auth-field">
-                <label>PASSWORD</label>
-                <PasswordField
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="Create a password"
-                  required
-                  autoComplete="new-password"
-                />
-              </div>
-              <div className="auth-field">
-                <label>CONFIRM PASSWORD</label>
-                <PasswordField
-                  value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm your password"
-                  required
-                  autoComplete="new-password"
-                />
-              </div>
-              {error && <p className="auth-form-feedback auth-form-feedback-error">{error}</p>}
+                <div className="auth-field">
+                  <label>DEPARTMENT</label>
+                  <input type="text" placeholder="Sales Department" value={department} onChange={event => setDepartment(event.target.value)} required />
+                </div>
+                <div className="auth-field">
+                  <label>PASSWORD</label>
+                  <PasswordField
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Create a password"
+                    required
+                    autoComplete="new-password"
+                  />
+                </div>
+                <div className="auth-field">
+                  <label>CONFIRM PASSWORD</label>
+                  <PasswordField
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm your password"
+                    required
+                    autoComplete="new-password"
+                  />
+                </div>
+                {error && <p className="auth-form-feedback auth-form-feedback-error">{error}</p>}
 
-              <div className="auth-actions">
-                <motion.button
-                  whileHover={{ scale: 1.02, backgroundColor: '#ff8a1f' }}
-                  whileTap={{ scale: 0.98 }}
-                  className="auth-primary-btn"
-                  type="submit"
-                >
-                  {busy ? 'CREATING...' : 'SIGN UP'}
-                </motion.button>
-                <div className="auth-meta-row">
-                  <Link to="/login" className="auth-switch-link auth-bottom-link">Back to login</Link>
+                <div className="auth-actions">
+                  <motion.button
+                    whileHover={{ scale: 1.02, backgroundColor: '#ff8a1f' }}
+                    whileTap={{ scale: 0.98 }}
+                    className="auth-primary-btn"
+                    type="submit"
+                  >
+                    {busy ? 'CREATING...' : 'SIGN UP'}
+                  </motion.button>
+                  <div className="auth-meta-row">
+                    <Link to="/login" className="auth-switch-link auth-bottom-link">Back to login</Link>
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </section>
 
-          <section className="auth-panel right">
+          <section className="auth-panel right auth-right">
             <Suspense fallback={<div className="qr-scanner-fallback" />}>
               <QRScanner
                 title="Scan Your QR Code"

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import { LogoutConfirm, SettingsPanel, SettingsToast } from './DashboardOverlays';
+import TeamCredits from '../common/TeamCredits';
 import PresentationMode from '../../pages/PresentationMode';
 import '../../styles/dashboard.css';
 import '../../styles/presentation.css';
@@ -11,6 +12,7 @@ function DashboardLayout({ children, onLogout }) {
   const [isPresenting, setIsPresenting] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isTeamPanelOpen, setIsTeamPanelOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [settingsToast, setSettingsToast] = useState({ isVisible: false, message: 'Settings saved', tone: 'success' });
   const toastTimerRef = useRef(null);
@@ -61,6 +63,8 @@ function DashboardLayout({ children, onLogout }) {
 
   const openSettings = useCallback(() => setIsSettingsOpen(true), []);
   const closeSettings = useCallback(() => setIsSettingsOpen(false), []);
+  const openTeamPanel = useCallback(() => setIsTeamPanelOpen(true), []);
+  const closeTeamPanel = useCallback(() => setIsTeamPanelOpen(false), []);
   const openLogout = useCallback(() => setIsLogoutOpen(true), []);
   const closeLogout = useCallback(() => setIsLogoutOpen(false), []);
   const pageClassName = useMemo(
@@ -68,7 +72,7 @@ function DashboardLayout({ children, onLogout }) {
     [isPresenting, isSidebarOpen]
   );
   const pageStyle = useMemo(
-    () => ({ willChange: 'opacity', '--sidebar-width': isSidebarOpen ? '252px' : '90px' }),
+    () => ({ willChange: 'opacity', '--sidebar-width': isSidebarOpen ? '290px' : '78px' }),
     [isSidebarOpen]
   );
 
@@ -111,6 +115,7 @@ function DashboardLayout({ children, onLogout }) {
             isOpen={isSidebarOpen}
             onToggle={toggleSidebar}
             onOpenSettings={openSettings}
+            onOpenTeam={openTeamPanel}
             onOpenLogout={openLogout}
           />
 
@@ -126,6 +131,7 @@ function DashboardLayout({ children, onLogout }) {
             onSave={handleSaveSettings}
             onNotify={showToast}
           />
+          <TeamCredits isOpen={isTeamPanelOpen} onClose={closeTeamPanel} />
           <LogoutConfirm isOpen={isLogoutOpen} onCancel={closeLogout} onConfirm={handleConfirmLogout} />
           <SettingsToast isVisible={settingsToast.isVisible} message={settingsToast.message} tone={settingsToast.tone} />
         </>

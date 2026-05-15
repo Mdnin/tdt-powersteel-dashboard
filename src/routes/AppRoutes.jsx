@@ -129,7 +129,7 @@ export default function AppRoutes() {
                   </ProtectedRoute>
                 }
               />
-              {['/dashboard', '/lead-sources', '/sales-reps', '/reports', '/profile'].map(path => (
+              {['/dashboard', '/analytics', '/presentation', '/sales-team', '/sales-analytics', '/lead-sources', '/product-analytics', '/kpi-monitoring', '/sales-reps', '/rankings', '/performance-board', '/reports', '/profile'].map(path => (
                 <Route
                   key={path}
                   path={path}

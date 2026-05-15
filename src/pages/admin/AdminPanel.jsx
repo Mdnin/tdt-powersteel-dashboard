@@ -66,7 +66,7 @@ function AdminPanel() {
           <h1>Admin Management</h1>
           <p>Control employee access, approval queues, upload governance, rankings, and analytics permissions.</p>
         </div>
-        <div className="admin-hero-badge">
+        <div className="admin-hero-badge admin-badge">
           <FiShield />
           <strong>Admin only</strong>
         </div>
