@@ -3,9 +3,6 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 82% 12%, rgba(255,122,0,0.08), transparent 26%),
-    linear-gradient(135deg, rgba(0,0,0,0.96), rgba(9,8,7,0.98));
 }
 
 .presentation-shell {
@@ -191,12 +188,31 @@
 .presentation-analytics-grid {
   min-height: 0;
   display: grid;
+  gap: 16px;
+}
+
+.presentation-grid-dashboard {
   grid-template-columns: minmax(0, 1.55fr) minmax(310px, 0.75fr) minmax(320px, 0.9fr);
   grid-template-rows: minmax(0, 1.22fr) minmax(0, 0.9fr);
   grid-template-areas:
     "main main source"
     "leads pie reps";
-  gap: 16px;
+}
+
+.presentation-grid-analytics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "daily monthly sources"
+    "products kpi heatmap";
+}
+
+.presentation-grid-sales-team {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  grid-template-rows: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  grid-template-areas:
+    "podium rankings"
+    "activity sales";
 }
 
 .presentation-panel {
@@ -226,16 +242,170 @@
   grid-area: source;
 }
 
-.presentation-analytics-grid > .presentation-panel:nth-child(3) {
+.presentation-panel-leads {
   grid-area: leads;
-}
-
-.presentation-analytics-grid > .presentation-panel:nth-child(4) {
-  grid-area: pie;
 }
 
 .presentation-ranking-panel {
   grid-area: reps;
+}
+
+.presentation-analytics-daily {
+  grid-area: daily;
+}
+
+.presentation-analytics-monthly {
+  grid-area: monthly;
+}
+
+.presentation-analytics-sources {
+  grid-area: sources;
+}
+
+.presentation-panel-pie {
+  grid-area: pie;
+}
+
+.presentation-analytics-products {
+  grid-area: products;
+}
+
+.presentation-analytics-kpi {
+  grid-area: kpi;
+}
+
+.presentation-analytics-heatmap {
+  grid-area: heatmap;
+}
+
+.presentation-team-podium {
+  grid-area: podium;
+}
+
+.presentation-grid-sales-team .presentation-ranking-panel {
+  grid-area: rankings;
+}
+
+.presentation-team-activity {
+  grid-area: activity;
+}
+
+.presentation-team-sales {
+  grid-area: sales;
+}
+
+.presentation-heatmap-list {
+  display: grid;
+  gap: 10px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.presentation-heatmap-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 44px;
+  gap: 10px;
+  align-items: center;
+}
+
+.presentation-heatmap-row span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.presentation-heatmap-row strong {
+  color: #ffb15a;
+  font-size: 12px;
+  text-align: right;
+}
+
+.presentation-heatmap-meter {
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.presentation-heatmap-meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #cc5500, #ffb15a);
+}
+
+.presentation-podium-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  min-height: 0;
+}
+
+.presentation-podium-card {
+  border: 1px solid rgba(255, 140, 0, 0.16);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.28);
+  padding: 14px 12px;
+  text-align: center;
+  min-width: 0;
+}
+
+.presentation-podium-card h3 {
+  margin: 8px 0 4px;
+  color: #fff;
+  font-size: 18px;
+}
+
+.presentation-podium-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 11px;
+}
+
+.presentation-podium-card strong {
+  display: block;
+  margin-top: 10px;
+  color: #ffa34d;
+  font-size: 22px;
+}
+
+.presentation-podium-rank {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 122, 0, 0.14);
+  color: #ffb15a;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.presentation-podium-stats {
+  margin-top: 10px;
+  display: grid;
+  gap: 4px;
+}
+
+.presentation-podium-stats span {
+  color: #7dffb5;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.presentation-podium-stats small {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 11px;
+}
+
+.presentation-podium-1 {
+  transform: translateY(-6px);
+  border-color: rgba(255, 177, 90, 0.34);
+  box-shadow: 0 0 20px rgba(255, 122, 0, 0.12);
+}
+
+.presentation-ranking-table-wide .presentation-ranking-row {
+  grid-template-columns: 34px minmax(0, 1.1fr) 0.8fr 0.7fr 0.7fr 0.55fr;
 }
 
 .presentation-panel-header {
@@ -392,8 +562,27 @@
     display: none;
   }
 
-  .presentation-analytics-grid {
+  .presentation-analytics-grid,
+  .presentation-grid-dashboard,
+  .presentation-grid-analytics,
+  .presentation-grid-sales-team {
     gap: 9px;
+  }
+
+  .presentation-grid-analytics,
+  .presentation-grid-sales-team {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, minmax(180px, auto));
+    grid-template-areas: none;
+  }
+
+  .presentation-grid-analytics > .presentation-panel,
+  .presentation-grid-sales-team > .presentation-panel {
+    grid-area: auto;
+  }
+
+  .presentation-podium-grid {
+    grid-template-columns: 1fr;
   }
 
   .presentation-panel {

@@ -593,6 +593,22 @@
   line-height: 1.55;
 }
 
+.qr-scan-status {
+  min-height: 18px;
+  margin: -8px 0 0;
+  color: rgba(255, 226, 190, 0.72);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.qr-scan-status-scanned {
+  color: #8ff0b0;
+}
+
+.qr-scan-status-denied {
+  color: #ffb28a;
+}
+
 .auth-modal-backdrop {
   position: fixed;
   inset: 0;

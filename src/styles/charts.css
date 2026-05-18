@@ -6,9 +6,12 @@
   border-radius: 12px;
   padding: 16px;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   box-shadow: 0 8px 16px rgba(0,0,0,0.16);
-  transition: transform 180ms ease, border-color 180ms ease;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
   transform: translateZ(0);
   will-change: transform;
 }
@@ -24,8 +27,9 @@
 }
 
 .chart-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255,177,90,0.18);
+  transform: translateY(-4px);
+  border-color: rgba(209, 96, 2, 0.55);
+  box-shadow: 0 0 18px rgba(209, 96, 2, 0.12);
 }
 
 .chart-header {
@@ -84,22 +88,21 @@
   right: 0;
   top: calc(100% + 10px);
   min-width: max-content;
-  padding: 8px 10px;
+  padding: 6px 8px;
+  font-size: 11px;
   border: 1px solid rgba(209,96,2,0.14);
-  border-radius: 10px;
+  border-radius: 8px;
   color: #fff;
   background: rgba(0,0,0,0.9);
-  box-shadow: 0 10px 22px rgba(0,0,0,0.26);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.22);
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-4px);
-  transition: opacity 160ms ease, transform 160ms ease;
+  transition: opacity 0.2s ease;
   z-index: 20;
 }
 
 .legend-item:hover::after {
   opacity: 1;
-  transform: translateY(0);
 }
 
 .chart-viewport {

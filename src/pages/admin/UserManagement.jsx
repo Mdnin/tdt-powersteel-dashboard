@@ -148,7 +148,6 @@ function UserManagement() {
       <div className="admin-section-header admin-management-topbar">
         <div>
           <small className="admin-breadcrumbs">Admin / Employee Directory</small>
-          <span>Account Governance</span>
           <h1>User Management</h1>
         </div>
         <div className="admin-topbar-actions">

@@ -8,6 +8,7 @@ import {
   getUsersWithPasswords,
   getRejectedRequests,
   getSession,
+  loginWithQrCode,
   loginWithCredentials,
   registerEmployee,
   deactivateUser,
@@ -49,6 +50,16 @@ export function AuthProvider({ children }) {
 
   const login = useCallback((identity, password) => {
     const result = loginWithCredentials(identity, password);
+    if (result.ok) {
+      setUser(result.user);
+      setUsers(getPublicUsers());
+      setAdminUsers(getUsersWithPasswords());
+    }
+    return result;
+  }, []);
+
+  const loginWithQr = useCallback(value => {
+    const result = loginWithQrCode(value);
     if (result.ok) {
       setUser(result.user);
       setUsers(getPublicUsers());
@@ -139,6 +150,7 @@ export function AuthProvider({ children }) {
     isApproved: user?.status === 'approved',
     isAdmin: user?.role === 'admin',
     login,
+    loginWithQr,
     signup,
     logout,
     approveEmployee,
@@ -150,7 +162,7 @@ export function AuthProvider({ children }) {
     updatePassword,
     refreshUsers,
     getPendingUsers
-  }), [adminUsers, approveEmployee, deactivateEmployee, forceEmployeePasswordReset, login, logout, refreshUsers, rejectEmployee, resetEmployeePassword, signup, updatePassword, updateProfile, user, users]);
+  }), [adminUsers, approveEmployee, deactivateEmployee, forceEmployeePasswordReset, login, loginWithQr, logout, refreshUsers, rejectEmployee, resetEmployeePassword, signup, updatePassword, updateProfile, user, users]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,3 +1,16 @@
+import {
+  dailySalesTrend,
+  kpiProgressData,
+  leadSourceData,
+  monthlyGrossSalesTrend,
+  productData,
+  salesByRep,
+  salesHeatmap
+} from './enterpriseAnalytics';
+import { baseSalesReps } from './salesRepData';
+
+const sourceColors = ['#ff7a00', '#ff9f43', '#10b981', '#3b82f6', '#D16002', '#CC5500'];
+
 export const presentationMetrics = [
   { label: 'Leads Gathered', value: '1,248', detail: '+12.5% vs prior period' },
   { label: 'Target Achievement', value: '94%', detail: 'Pacing above forecast' },
@@ -29,3 +42,77 @@ export const presentationRepData = [
   { name: 'Mark Santos', sales: 'PHP 150K', deals: 9, rank: 3 },
   { name: 'Rica Tan', sales: 'PHP 132K', deals: 8, rank: 4 }
 ];
+
+export const analyticsPresentationMetrics = [
+  { label: 'Gross Sales', value: 'PHP 2.1M', detail: '84% of target' },
+  { label: 'GK Value', value: 'PHP 418K', detail: '83.6% completion' },
+  { label: 'Leads', value: '1,248', detail: '89.1% of target' },
+  { label: 'Closed Deals', value: '324', detail: '85.2% completion' },
+  { label: 'Conversion', value: '26%', detail: '+2.4% lift' },
+  { label: 'Top Source', value: 'Google', detail: '172 leads' }
+];
+
+export const analyticsPresentationLeadSources = leadSourceData.slice(0, 6).map((source, index) => ({
+  name: source.label,
+  value: source.leads,
+  color: sourceColors[index % sourceColors.length]
+}));
+
+export const analyticsPresentationProducts = productData.map((product, index) => ({
+  name: product.label,
+  value: product.contribution,
+  color: sourceColors[index % sourceColors.length]
+}));
+
+export const analyticsPresentationKpi = kpiProgressData.map(item => ({
+  label: item.label,
+  actual: item.actual,
+  target: item.target,
+  completion: item.completion
+}));
+
+export const analyticsPresentationHeatmap = salesHeatmap.map(day => ({
+  day: day.day,
+  level: day.level
+}));
+
+export const analyticsDailySales = dailySalesTrend;
+export const analyticsMonthlySales = monthlyGrossSalesTrend;
+
+export const salesTeamPresentationMetrics = [
+  { label: 'Active Reps', value: '18', detail: '12 approved accounts' },
+  { label: 'Top Performer', value: 'John Cruz', detail: '98% performance' },
+  { label: 'Team Leads', value: '1,934', detail: 'Gathered this period' },
+  { label: 'Converted', value: '452', detail: '23.4% avg rate' },
+  { label: 'Gross Sales', value: 'PHP 1.18M', detail: 'Top 8 reps' },
+  { label: 'Elite Reps', value: '4', detail: '90%+ performance' }
+];
+
+export const salesTeamPresentationTopReps = [...baseSalesReps]
+  .sort((a, b) => b.performance - a.performance)
+  .slice(0, 3)
+  .map((rep, index) => ({
+    rank: index + 1,
+    name: rep.name,
+    department: rep.department,
+    performance: `${rep.performance}%`,
+    leads: rep.leadsGathered,
+    converted: rep.convertedLeads,
+    sales: `PHP ${Math.round(rep.grossSalesValue / 1000)}K`
+  }));
+
+export const salesTeamPresentationRankings = salesByRep.map((rep, index) => ({
+  rank: index + 1,
+  name: rep.label,
+  sales: `PHP ${Math.round(rep.sales / 1000)}K`,
+  deals: rep.deals,
+  leads: rep.leads,
+  gk: `${rep.gk}%`
+}));
+
+export const salesTeamPresentationActivity = salesByRep.map(rep => ({
+  label: rep.label.split(' ')[0],
+  leads: rep.leads,
+  deals: rep.deals,
+  sales: Math.round(rep.sales / 1000)
+}));

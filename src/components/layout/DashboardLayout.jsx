@@ -1,14 +1,17 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import { LogoutConfirm, SettingsPanel, SettingsToast } from './DashboardOverlays';
 import TeamCredits from '../common/TeamCredits';
 import PresentationMode from '../../pages/PresentationMode';
+import { resolvePresentationVariant } from '../../utils/presentationVariant';
 import '../../styles/dashboard.css';
 import '../../styles/presentation.css';
 
 function DashboardLayout({ children, onLogout }) {
+  const { pathname } = useLocation();
   const [isPresenting, setIsPresenting] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -67,6 +70,7 @@ function DashboardLayout({ children, onLogout }) {
   const closeTeamPanel = useCallback(() => setIsTeamPanelOpen(false), []);
   const openLogout = useCallback(() => setIsLogoutOpen(true), []);
   const closeLogout = useCallback(() => setIsLogoutOpen(false), []);
+  const presentationVariant = useMemo(() => resolvePresentationVariant(pathname), [pathname]);
   const pageClassName = useMemo(
     () => `dashboard-page ${isPresenting ? 'presentation-mode' : ''} ${isSidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`,
     [isPresenting, isSidebarOpen]
@@ -108,7 +112,7 @@ function DashboardLayout({ children, onLogout }) {
       style={pageStyle}
     >
       {isPresenting ? (
-        <PresentationMode onExit={exitPresentation} />
+        <PresentationMode variant={presentationVariant} onExit={exitPresentation} />
       ) : (
         <>
           <Sidebar

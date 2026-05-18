@@ -1,0 +1,369 @@
+.tdt-qr-page {
+  min-height: calc(100vh - 36px);
+  display: grid;
+  place-items: center;
+  padding: 26px 14px 42px;
+  background:
+    linear-gradient(135deg, rgba(209, 96, 2, 0.08), transparent 34%),
+    radial-gradient(circle at 82% 14%, rgba(204, 85, 0, 0.13), transparent 34%),
+    #0b0b0b;
+  position: relative;
+  overflow: hidden;
+}
+
+.tdt-qr-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.026) 0 1px, transparent 1px 8px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 10px);
+  opacity: 0.24;
+  pointer-events: none;
+}
+
+.tdt-qr-shell {
+  width: min(560px, 100%);
+  display: grid;
+  gap: 14px;
+  padding: clamp(18px, 3vw, 24px);
+  color: #f5f5f5;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)),
+    rgba(18, 18, 18, 0.95);
+  border: 1px solid rgba(209, 96, 2, 0.18);
+  border-radius: 18px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42), 0 0 34px rgba(209, 96, 2, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.tdt-qr-shell-compact {
+  max-width: 460px;
+  padding: 18px;
+  border-radius: 20px;
+}
+
+.tdt-qr-steel-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.035), transparent),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 12px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.tdt-qr-header,
+.tdt-qr-reader-frame,
+.tdt-qr-status-row,
+.tdt-qr-result-card,
+.tdt-qr-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.tdt-qr-header {
+  display: grid;
+  text-align: center;
+}
+
+.tdt-qr-header h1 {
+  margin: 0;
+  color: #f5f5f5;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.05;
+  font-weight: 850;
+  letter-spacing: 0;
+}
+
+.tdt-qr-shell-compact .tdt-qr-header h1 {
+  font-size: 26px;
+}
+
+.tdt-qr-reader-frame {
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 28px;
+  background: #0b0b0b;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.035), 0 0 30px rgba(204, 85, 0, 0.12);
+}
+
+.tdt-qr-shell-compact .tdt-qr-reader-frame {
+  max-width: 380px;
+}
+
+#qr-reader {
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  background: #0b0b0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#qr-reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: 24px;
+}
+
+#qr-reader canvas {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+#qr-reader img {
+  display: none !important;
+}
+
+#qr-reader__dashboard {
+  display: none;
+}
+
+#qr-reader__dashboard_section,
+#qr-reader__scan_region {
+  border: 0 !important;
+}
+
+.tdt-qr-frame-image {
+  position: absolute;
+  inset: 18px;
+  width: calc(100% - 36px);
+  height: calc(100% - 36px);
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+  z-index: 4;
+  filter: drop-shadow(0 0 14px rgba(209, 96, 2, 0.24));
+}
+
+.tdt-qr-reader-scanning::after,
+.tdt-qr-reader-starting::after {
+  content: '';
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: 25%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(209, 96, 2, 0.95), transparent);
+  box-shadow: 0 0 16px rgba(209, 96, 2, 0.5);
+  animation: tdtQrScanLine 2.6s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes tdtQrScanLine {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(145px);
+  }
+}
+
+.tdt-qr-success-layer {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(6, 12, 8, 0.62);
+  box-shadow: inset 0 0 90px rgba(93, 255, 149, 0.16);
+  z-index: 5;
+  border-radius: 28px;
+}
+
+.tdt-qr-success-layer span {
+  width: 86px;
+  height: 86px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: #a7f7bf;
+  background: rgba(19, 72, 34, 0.72);
+  border: 1px solid rgba(150, 255, 184, 0.38);
+}
+
+.tdt-qr-success-layer svg {
+  width: 46px;
+  height: 46px;
+}
+
+.tdt-qr-status-row {
+  width: min(430px, 100%);
+  justify-self: center;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  color: rgba(245, 245, 245, 0.72);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.tdt-qr-status-dot {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #7a7a7a;
+}
+
+.tdt-qr-status-dot-scanning {
+  background: #D16002;
+  box-shadow: 0 0 14px rgba(209, 96, 2, 0.72);
+}
+
+.tdt-qr-status-dot-success {
+  background: #8ff0b0;
+  box-shadow: 0 0 14px rgba(143, 240, 176, 0.55);
+}
+
+.tdt-qr-status-dot-error {
+  background: #ff8a64;
+}
+
+.tdt-qr-result-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(180px, 0.7fr);
+  gap: 16px;
+  padding: 16px;
+  border-radius: 14px;
+  background:
+    linear-gradient(145deg, rgba(209, 96, 2, 0.12), transparent),
+    rgba(8, 8, 8, 0.72);
+  border: 1px solid rgba(209, 96, 2, 0.22);
+}
+
+.tdt-qr-result-card span {
+  display: block;
+  margin-bottom: 8px;
+  color: #8ff0b0;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.tdt-qr-result-card strong,
+.tdt-qr-result-card dt {
+  color: rgba(245, 245, 245, 0.56);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.tdt-qr-result-card p {
+  margin: 8px 0 0;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.tdt-qr-result-card dl {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.tdt-qr-result-card dd {
+  margin: 4px 0 0;
+  color: #f5f5f5;
+  font-size: 13px;
+}
+
+.tdt-qr-actions {
+  width: min(430px, 100%);
+  justify-self: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tdt-qr-actions button {
+  min-height: 44px;
+  flex: 1 1 148px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  color: #fff;
+  background: linear-gradient(180deg, #D16002, #CC5500);
+  border: 1px solid rgba(255, 173, 91, 0.24);
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+
+.tdt-qr-actions button:hover {
+  box-shadow: 0 10px 24px rgba(209, 96, 2, 0.18);
+  filter: brightness(1.05);
+}
+
+.tdt-qr-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+  filter: grayscale(0.4);
+}
+
+.tdt-qr-actions svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 720px) {
+  .tdt-qr-page {
+    align-items: start;
+    padding: 12px;
+  }
+
+  .tdt-qr-shell {
+    border-radius: 14px;
+    gap: 14px;
+  }
+
+  .tdt-qr-result-card {
+    grid-template-columns: 1fr;
+  }
+
+  .tdt-qr-status-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .tdt-qr-actions button {
+    flex-basis: 100%;
+  }
+
+  @keyframes tdtQrScanLine {
+    0%, 100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(118px);
+    }
+  }
+}

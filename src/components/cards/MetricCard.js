@@ -21,7 +21,7 @@ function MetricCard({ title, value, trend, trendValue, icon, interactive = false
   const trendColor = trend === 'up' ? '#10b981' : '#ef4444';
 
   return (
-    <div className={`metric-card ${interactive ? 'metric-card-interactive' : ''}`}>
+    <div className={`metric-card kpi-card${interactive ? ' metric-card-interactive' : ''}`}>
       <div className="glass-inner" />
       <div className="metric-header">
         <div className="metric-icon">{cardIcon}</div>

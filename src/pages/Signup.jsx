@@ -131,6 +131,7 @@ export default function Signup() {
               <QRScanner
                 title="Scan Your QR Code"
                 subtitle="Save Your QR Code for Future Access"
+                compact
               />
             </Suspense>
           </section>

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from 'react';
+import { Suspense, lazy, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logos/tdt_logo.png';
@@ -16,7 +16,7 @@ const pageMotion = {
 const QRScanner = lazy(() => import('../components/cards/QRScanner'));
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, loginWithQr } = useAuth();
   const [identity, setIdentity] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(true);
@@ -50,6 +50,20 @@ export default function Login() {
       setBusy(false);
     }, 600);
   };
+
+  const handleQrScan = useCallback(value => {
+    setBusy(true);
+    setError('');
+
+    const result = loginWithQr(value);
+    if (!result.ok) {
+      setError(result.message);
+      setBusy(false);
+      return false;
+    }
+
+    return true;
+  }, [loginWithQr]);
 
   const updatePasswordField = key => event => {
     setPasswordForm(current => ({ ...current, [key]: event.target.value }));
@@ -131,7 +145,12 @@ export default function Login() {
 
           <section className="auth-panel right auth-right">
             <Suspense fallback={<div className="qr-scanner-fallback" />}>
-              <QRScanner title="Scan Your QR Code" subtitle="Align your employee QR code inside the scanner frame" />
+              <QRScanner
+                title="Scan Your QR Code"
+                subtitle="Align your employee QR code inside the scanner frame"
+                onScan={handleQrScan}
+                compact
+              />
             </Suspense>
           </section>
         </div>

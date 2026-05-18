@@ -2,7 +2,12 @@ import { motion } from 'framer-motion';
 import { Minimize2, Radio } from 'lucide-react';
 import logo from '../../assets/logos/tdt_logo.png';
 
-export default function PresentationHeader({ dateRange, onExit, refreshLabel = 'Live sync active' }) {
+export default function PresentationHeader({
+  title = 'TDT POWERSTEEL DASHBOARD',
+  dateRange,
+  onExit,
+  refreshLabel = 'Live sync active'
+}) {
   return (
     <motion.header
       className="presentation-header"
@@ -14,7 +19,7 @@ export default function PresentationHeader({ dateRange, onExit, refreshLabel = '
         <img src={logo} alt="TDT Powersteel" className="presentation-logo" />
         <div>
           <p className="presentation-company">TDT Powersteel</p>
-          <h1>TDT POWERSTEEL DASHBOARD</h1>
+          <h1>{title}</h1>
         </div>
       </div>
 

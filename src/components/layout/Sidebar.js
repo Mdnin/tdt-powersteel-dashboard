@@ -214,4 +214,3 @@ function Sidebar({ isOpen, onToggle, onOpenSettings, onOpenLogout }) {
 }
 
 export default memo(Sidebar);
-

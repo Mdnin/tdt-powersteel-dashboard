@@ -117,6 +117,45 @@ export function loginWithCredentials(identity, password) {
   return { ok: true, user: setSession(user) };
 }
 
+function parseQrIdentity(value) {
+  const rawValue = String(value || '').trim();
+  if (!rawValue) return '';
+
+  try {
+    const parsed = JSON.parse(rawValue);
+    return parsed.token || parsed.email || parsed.id || parsed.identity || rawValue;
+  } catch {
+    try {
+      const url = new URL(rawValue);
+      return (
+        url.searchParams.get('token') ||
+        url.searchParams.get('email') ||
+        url.searchParams.get('id') ||
+        rawValue
+      );
+    } catch {
+      return rawValue;
+    }
+  }
+}
+
+export function loginWithQrCode(value) {
+  const qrIdentity = parseQrIdentity(value).trim().toLowerCase();
+  const users = getUsers();
+  const user = users.find(account => (
+    account.token?.toLowerCase() === qrIdentity ||
+    account.id?.toLowerCase() === qrIdentity ||
+    account.email.toLowerCase() === qrIdentity ||
+    account.name.toLowerCase() === qrIdentity
+  ));
+
+  if (!user) {
+    return { ok: false, message: 'QR code is not linked to an account.' };
+  }
+
+  return { ok: true, user: setSession(user) };
+}
+
 export function registerEmployee({ firstName, lastName, email, department, password }) {
   const users = getUsers();
   const normalizedEmail = email.trim().toLowerCase();

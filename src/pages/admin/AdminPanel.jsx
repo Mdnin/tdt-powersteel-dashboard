@@ -1,15 +1,22 @@
 import { memo, useMemo } from 'react';
-import { FiActivity, FiDatabase, FiEdit3, FiShield, FiTrendingUp, FiUploadCloud, FiUserCheck, FiUsers, FiUserX } from 'react-icons/fi';
+import { FiActivity, FiShield, FiTrendingUp, FiUploadCloud, FiUserCheck, FiUsers, FiUserX } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../auth/AuthContext';
 import PendingApprovals from './PendingApprovals';
 import '../../styles/admin.css';
 
 const adminTools = [
-  { label: 'Manage Uploads', detail: 'Review imported files and dataset readiness', Icon: FiUploadCloud },
-  { label: 'Edit Rankings', detail: 'Tune representative ranking controls', Icon: FiEdit3 },
-  { label: 'Analytics Access', detail: 'Inspect enterprise dashboard telemetry', Icon: FiTrendingUp },
-  { label: 'Admin Controls', detail: 'Govern elevated account permissions', Icon: FiDatabase }
+  { label: 'Import Sales Data', detail: 'Upload CSV/XLSX files or connect Google Sheets before teams view dashboards.', Icon: FiUploadCloud, action: 'Open upload page', path: '/upload' },
+  { label: 'Review New Users', detail: 'Approve employees who should be allowed to use the sales system.', Icon: FiUserCheck, action: 'Review requests', path: '/admin/pending-approvals' },
+  { label: 'Manage Accounts', detail: 'Reset passwords, disable accounts, and check employee access status.', Icon: FiUsers, action: 'Open user list', path: '/admin/users' },
+  { label: 'Check Reports', detail: 'View analytics after data has been imported successfully.', Icon: FiTrendingUp, action: 'Open analytics', path: '/analytics' }
+];
+
+const adminGuideSteps = [
+  'Import sales data first so dashboards do not appear empty.',
+  'Approve pending employee requests after checking their details.',
+  'Use User Management for password resets, account status, and access cleanup.'
 ];
 
 const AdminMetricCard = memo(function AdminMetricCard({ label, value, detail, Icon, tone }) {
@@ -25,18 +32,24 @@ const AdminMetricCard = memo(function AdminMetricCard({ label, value, detail, Ic
   );
 });
 
-const AdminToolCard = memo(function AdminToolCard({ label, detail, Icon }) {
+const AdminToolCard = memo(function AdminToolCard({ label, detail, Icon, action, path, onOpen }) {
   return (
-    <article className="admin-tool-card">
-      <Icon />
-      <strong>{label}</strong>
-      <span>{detail}</span>
+    <article className="admin-tool-card admin-guide-card">
+      <div className="admin-guide-card-icon">
+        <Icon />
+      </div>
+      <div>
+        <strong>{label}</strong>
+        <span>{detail}</span>
+      </div>
+      <button type="button" onClick={() => onOpen(path)}>{action}</button>
     </article>
   );
 });
 
 function AdminPanel() {
   const { users, pendingUsers, rejectedRequests } = useAuth();
+  const navigate = useNavigate();
   const stats = useMemo(() => {
     const approvedEmployees = users.filter(user => user.role === 'employee' && user.status === 'approved').length;
     const activeUsers = users.filter(user => user.status === 'approved').length;
@@ -62,14 +75,28 @@ function AdminPanel() {
       <section className="admin-hero">
         <div>
           <small className="admin-breadcrumbs">Dashboard / Admin</small>
-          <span>Administrator Workspace</span>
-          <h1>Admin Management</h1>
-          <p>Control employee access, approval queues, upload governance, rankings, and analytics permissions.</p>
+          <span>Beginner Admin Guide</span>
+          <h1>Admin Control Center</h1>
+          <p>Start here to keep the system ready: import sales data, approve new employees, and manage account access in a few guided steps.</p>
         </div>
         <div className="admin-hero-badge admin-badge">
           <FiShield />
           <strong>Admin only</strong>
+          <small>{pendingUsers.length ? `${pendingUsers.length} request${pendingUsers.length === 1 ? '' : 's'} waiting` : 'No pending requests'}</small>
         </div>
+      </section>
+
+      <section className="admin-start-guide">
+        <div>
+          <span>Start Here</span>
+          <h2>Recommended admin workflow</h2>
+          <p>Follow these in order when you are setting up or checking the dashboard for the day.</p>
+        </div>
+        <ol>
+          {adminGuideSteps.map(step => (
+            <li key={step}>{step}</li>
+          ))}
+        </ol>
       </section>
 
       <section className="admin-metrics-grid">
@@ -80,15 +107,15 @@ function AdminPanel() {
 
       <section className="admin-command-grid">
         <div className="admin-tools-grid">
-          {adminTools.map(({ label, detail, Icon }) => (
-            <AdminToolCard key={label} label={label} detail={detail} Icon={Icon} />
+          {adminTools.map(({ label, detail, Icon, action, path }) => (
+            <AdminToolCard key={label} label={label} detail={detail} Icon={Icon} action={action} path={path} onOpen={navigate} />
           ))}
         </div>
         <aside className="admin-activity-panel">
           <div>
-            <span>Approval Analytics</span>
+            <span>Account Readiness</span>
             <h2>{stats.approvalRate}% approved</h2>
-            <p>Employee account readiness across all signup requests.</p>
+            <p>This shows how many employee accounts are ready to use the dashboard.</p>
           </div>
           <div className="admin-activity-meter">
             <span style={{ transform: `scaleX(${stats.approvalRate / 100})` }} />

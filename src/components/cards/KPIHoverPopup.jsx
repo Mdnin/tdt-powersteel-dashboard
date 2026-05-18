@@ -1,14 +1,11 @@
 import { memo } from 'react';
-import { FiArrowDownRight, FiArrowUpRight } from 'react-icons/fi';
-import { GoDotFill } from 'react-icons/go';
 import {
   Area,
   AreaChart,
   Bar,
   BarChart,
+  CartesianGrid,
   Cell,
-  Line,
-  LineChart,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -16,246 +13,296 @@ import {
   XAxis,
   YAxis
 } from 'recharts';
+import { Activity, BarChart3, Target, TrendingDown, TrendingUp, Users } from 'lucide-react';
+import { monthlyGrossSalesTrend, weeklySalesTrend, dailySalesTrend, clientTypeSales } from '../../data/enterpriseAnalytics';
 
-const orange = '#ffb15a';
-const actualSalesColor = '#D16002';
-const targetSalesColor = '#CC5500';
-const amber = '#ffb347';
-const muted = 'rgba(255,255,255,0.62)';
-const smallAxisTick = { fill: muted, fontSize: 10 };
-const verticalAxisTick = { fill: 'rgba(255,255,255,0.72)', fontSize: 10 };
-const lineMargin = { top: 8, right: 6, left: -28, bottom: 0 };
-const barMargin = { top: 8, right: 4, left: -24, bottom: 0 };
-const areaMargin = { top: 6, right: 8, left: 0, bottom: 6 };
-const tooltipElement = <PopupTooltip />;
+const POPUP_COLORS = ['#D16002', '#ff9f43', '#ffb15a', '#10b981'];
 
 const kpiInsights = {
-  leads: {
-    eyebrow: 'Weekly lead growth',
-    title: 'Lead Momentum',
-    trend: '+12.5%',
-    trendDirection: 'up',
-    meta: [
-      { label: 'Conversion', value: '28.4%' },
-      { label: 'New this week', value: '312' }
-    ],
-    data: [
-      { label: 'Mon', leads: 128, conversion: 21 },
-      { label: 'Tue', leads: 148, conversion: 23 },
-      { label: 'Wed', leads: 132, conversion: 24 },
-      { label: 'Thu', leads: 176, conversion: 27 },
-      { label: 'Fri', leads: 208, conversion: 29 },
-      { label: 'Sat', leads: 226, conversion: 31 },
-      { label: 'Sun', leads: 230, conversion: 32 }
-    ],
-    type: 'line'
-  },
   sales: {
-    eyebrow: 'Monthly revenue comparison',
-    title: 'Revenue Velocity',
+    title: 'Revenue Pulse',
+    eyebrow: 'Gross sales trend',
+    icon: BarChart3,
     trend: '+8.2%',
-    trendDirection: 'up',
-    meta: [
-      { label: 'Current', value: 'PHP 2.1M' },
-      { label: 'Previous', value: 'PHP 1.94M' }
-    ],
-    data: [
-      { label: 'Jan', revenue: 1.45, target: 1.3 },
-      { label: 'Feb', revenue: 1.62, target: 1.5 },
-      { label: 'Mar', revenue: 1.86, target: 1.7 },
-      { label: 'Apr', revenue: 2.04, target: 1.9 },
-      { label: 'May', revenue: 2.1, target: 2.0 }
-    ],
-    type: 'bar'
+    direction: 'up',
+    chartType: 'area',
+    dataKey: 'sales',
+    data: monthlyGrossSalesTrend,
+    stats: [
+      { label: 'MTD', value: 'PHP 2.1M' },
+      { label: 'Target', value: 'PHP 2.0M' },
+      { label: 'GK Share', value: '19.9%' },
+      { label: 'Variance', value: '+4.8%' }
+    ]
   },
-  reps: {
-    eyebrow: 'Team performance graph',
-    title: 'Rep Leaderboard',
-    trend: '+2 active',
-    trendDirection: 'up',
-    meta: [
-      { label: 'Active reps', value: '18' },
-      { label: 'Team index', value: '91%' }
-    ],
-    data: [
-      { label: 'Ana', score: 94 },
-      { label: 'Migz', score: 88 },
-      { label: 'Carlo', score: 82 },
-      { label: 'Bea', score: 76 }
-    ],
-    type: 'area'
+  gk: {
+    title: 'GK Contribution',
+    eyebrow: 'GK vs gross sales',
+    icon: Activity,
+    trend: '+6.9%',
+    direction: 'up',
+    chartType: 'bar',
+    dataKey: 'gk',
+    data: monthlyGrossSalesTrend,
+    stats: [
+      { label: 'MTD GK', value: 'PHP 418K' },
+      { label: 'Avg GK %', value: '19.4%' },
+      { label: 'Top Branch', value: 'Caloocan' },
+      { label: 'MoM', value: '+6.9%' }
+    ]
+  },
+  leads: {
+    title: 'Lead Momentum',
+    eyebrow: 'Weekly lead velocity',
+    icon: Users,
+    trend: '+12.5%',
+    direction: 'up',
+    chartType: 'area',
+    dataKey: 'sales',
+    data: weeklySalesTrend,
+    stats: [
+      { label: 'This Week', value: '312' },
+      { label: 'Qualified', value: '68%' },
+      { label: 'Top Source', value: 'Facebook' },
+      { label: 'Pipeline', value: '1,248' }
+    ]
   },
   deals: {
-    eyebrow: 'Conversion breakdown',
-    title: 'Closing Health',
+    title: 'Deal Closure',
+    eyebrow: 'Closed deal cadence',
+    icon: Target,
     trend: '-3.1%',
-    trendDirection: 'down',
-    meta: [
-      { label: 'Successful', value: '324' },
-      { label: 'Lost', value: '83' }
-    ],
-    data: [
-      { name: 'Closed', value: 324 },
-      { name: 'Lost', value: 83 }
-    ],
-    type: 'donut',
-    closingRate: '79.6%'
+    direction: 'down',
+    chartType: 'bar',
+    dataKey: 'conversion',
+    data: weeklySalesTrend,
+    stats: [
+      { label: 'Closed', value: '324' },
+      { label: 'Win Rate', value: '25.9%' },
+      { label: 'Avg Cycle', value: '11d' },
+      { label: 'At Risk', value: '42' }
+    ]
+  },
+  conversion: {
+    title: 'Conversion Health',
+    eyebrow: 'Weekly conversion rate',
+    icon: Activity,
+    trend: '+2.4%',
+    direction: 'up',
+    chartType: 'line-area',
+    dataKey: 'conversion',
+    data: weeklySalesTrend,
+    stats: [
+      { label: 'Rate', value: '25.9%' },
+      { label: 'Target', value: '24%' },
+      { label: 'Best Week', value: 'W4' },
+      { label: 'Lift', value: '+2.4%' }
+    ]
+  },
+  'active-reps': {
+    title: 'Rep Activity',
+    eyebrow: 'Active field coverage',
+    icon: Users,
+    trend: '+2',
+    direction: 'up',
+    chartType: 'bar',
+    dataKey: 'sales',
+    data: dailySalesTrend,
+    stats: [
+      { label: 'Active', value: '18' },
+      { label: 'On Target', value: '14' },
+      { label: 'Coaching', value: '3' },
+      { label: 'Capacity', value: '94%' }
+    ]
+  },
+  'avg-rep': {
+    title: 'Rep Productivity',
+    eyebrow: 'Average output per rep',
+    icon: BarChart3,
+    trend: '+5.1%',
+    direction: 'up',
+    chartType: 'area',
+    dataKey: 'sales',
+    data: dailySalesTrend,
+    stats: [
+      { label: 'Avg Sales', value: 'PHP 117K' },
+      { label: 'Median', value: 'PHP 108K' },
+      { label: 'Top Quartile', value: 'PHP 142K' },
+      { label: 'Growth', value: '+5.1%' }
+    ]
+  },
+  growth: {
+    title: 'Growth Trajectory',
+    eyebrow: 'Month-over-month lift',
+    icon: Activity,
+    trend: '+1.8%',
+    direction: 'up',
+    chartType: 'area',
+    dataKey: 'sales',
+    data: monthlyGrossSalesTrend,
+    stats: [
+      { label: 'MoM', value: '8.2%' },
+      { label: 'QoQ', value: '11.4%' },
+      { label: 'Forecast', value: '9.1%' },
+      { label: 'Delta', value: '+1.8%' }
+    ]
+  },
+  clients: {
+    title: 'Client Base',
+    eyebrow: 'Client mix overview',
+    icon: Users,
+    trend: '+34',
+    direction: 'up',
+    chartType: 'donut',
+    data: clientTypeSales,
+    stats: [
+      { label: 'Total', value: '486' },
+      { label: 'New', value: '34' },
+      { label: 'Repeat', value: '62%' },
+      { label: 'Churn', value: '2.1%' }
+    ]
+  },
+  'top-rep': {
+    title: 'Top Performer',
+    eyebrow: 'Leaderboard snapshot',
+    icon: Target,
+    trend: '94%',
+    direction: 'up',
+    chartType: 'bar',
+    dataKey: 'sales',
+    data: dailySalesTrend,
+    stats: [
+      { label: 'Rep', value: 'Ana Reyes' },
+      { label: 'Quota', value: '94%' },
+      { label: 'Deals', value: '48' },
+      { label: 'GK %', value: '22%' }
+    ]
   }
 };
 
 function PopupTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
-
   return (
     <div className="kpi-popup-tooltip">
-      <p>{label || payload[0].name}</p>
-      <strong>{payload[0].value}</strong>
+      <p>{label}</p>
+      <strong>{payload[0].value?.toLocaleString?.() ?? payload[0].value}</strong>
     </div>
   );
 }
 
-function TrendBadge({ direction, value }) {
-  const Icon = direction === 'down' ? FiArrowDownRight : FiArrowUpRight;
+const tooltipElement = <PopupTooltip />;
 
+function TrendBadge({ direction, trend }) {
   return (
     <span className={`kpi-popup-trend ${direction === 'down' ? 'is-down' : 'is-up'}`}>
-      <Icon size={14} />
-      {value}
+      {direction === 'down' ? <TrendingDown size={14} /> : <TrendingUp size={14} />}
+      {trend}
     </span>
   );
 }
 
 function KPIChart({ insight }) {
-  if (insight.type === 'line') {
+  const { chartType, dataKey, data } = insight;
+
+  if (chartType === 'donut') {
     return (
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={insight.data} margin={lineMargin}>
-          <defs>
-            <linearGradient id="leadLineGlow" x1="0" x2="1" y1="0" y2="0">
-              <stop offset="0%" stopColor={orange} />
-              <stop offset="100%" stopColor={amber} />
-            </linearGradient>
-          </defs>
-          <XAxis dataKey="label" tick={smallAxisTick} axisLine={false} tickLine={false} />
-          <YAxis hide domain={['dataMin - 10', 'dataMax + 10']} />
-          <Tooltip content={tooltipElement} cursor={{ stroke: 'rgba(255,177,90,0.12)' }} />
-          <Line
-            type="monotone"
-            dataKey="leads"
-            stroke="url(#leadLineGlow)"
-            strokeWidth={3}
-            dot={{ r: 3, fill: orange, strokeWidth: 0 }}
-            activeDot={{ r: 5, fill: amber, stroke: orange }}
-            animationDuration={280}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      <div className="kpi-donut-wrap">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie data={data} dataKey="value" nameKey="name" innerRadius={52} outerRadius={72} paddingAngle={3}>
+              {data.map((entry, index) => (
+                <Cell key={entry.name} fill={POPUP_COLORS[index % POPUP_COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip content={tooltipElement} />
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="kpi-donut-center">
+          <strong>{data[0]?.value}%</strong>
+          <span>{data[0]?.name}</span>
+        </div>
+      </div>
     );
   }
 
-  if (insight.type === 'bar') {
+  if (chartType === 'bar') {
     return (
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={insight.data} margin={barMargin}>
-          <defs>
-            <linearGradient id="salesBarGlow" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor={actualSalesColor} />
-              <stop offset="100%" stopColor={actualSalesColor} stopOpacity={0.78} />
-            </linearGradient>
-          </defs>
-          <XAxis dataKey="label" tick={smallAxisTick} axisLine={false} tickLine={false} />
-          <YAxis hide />
+        <BarChart data={data} margin={{ top: 8, right: 4, left: -18, bottom: 0 }}>
+          <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
+          <XAxis dataKey="label" tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} width={36} />
           <Tooltip content={tooltipElement} cursor={{ fill: 'rgba(209,96,2,0.06)' }} />
-          <Bar dataKey="target" fill={targetSalesColor} opacity={0.62} radius={[5, 5, 0, 0]} animationDuration={240} />
-          <Bar dataKey="revenue" fill="url(#salesBarGlow)" radius={[5, 5, 0, 0]} animationDuration={280} />
+          <Bar dataKey={dataKey} fill="#D16002" radius={[6, 6, 0, 0]} maxBarSize={28} />
         </BarChart>
       </ResponsiveContainer>
     );
   }
 
-  if (insight.type === 'area') {
-    return (
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={insight.data} layout="vertical" margin={areaMargin}>
-          <defs>
-            <linearGradient id="repAreaGlow" x1="0" x2="1" y1="0" y2="0">
-              <stop offset="0%" stopColor="rgba(255,177,90,0.10)" />
-              <stop offset="100%" stopColor="rgba(255,179,71,0.9)" />
-            </linearGradient>
-          </defs>
-          <XAxis type="number" hide domain={[0, 100]} />
-          <YAxis
-            type="category"
-            dataKey="label"
-            tick={verticalAxisTick}
-            width={38}
-            axisLine={false}
-            tickLine={false}
-          />
-          <Tooltip content={tooltipElement} cursor={{ fill: 'rgba(255,177,90,0.06)' }} />
-          <Area
-            dataKey="score"
-            type="monotone"
-            fill="url(#repAreaGlow)"
-            stroke={orange}
-            strokeWidth={2}
-            animationDuration={280}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
-    );
-  }
-
   return (
-    <div className="kpi-donut-wrap">
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <Pie
-            data={insight.data}
-            dataKey="value"
-            nameKey="name"
-            innerRadius="62%"
-            outerRadius="86%"
-            paddingAngle={5}
-            animationDuration={300}
-          >
-            <Cell fill={orange} />
-            <Cell fill="rgba(255,255,255,0.16)" />
-          </Pie>
-          <Tooltip content={tooltipElement} />
-        </PieChart>
-      </ResponsiveContainer>
-      <div className="kpi-donut-center">
-        <strong>{insight.closingRate}</strong>
-        <span>Closing rate</span>
-      </div>
-    </div>
+    <ResponsiveContainer width="100%" height="100%">
+      <AreaChart data={data} margin={{ top: 8, right: 4, left: -18, bottom: 0 }}>
+        <defs>
+          <linearGradient id="kpiPopupFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#D16002" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="#D16002" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
+        <XAxis dataKey="label" tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} />
+        <YAxis tick={{ fill: '#888', fontSize: 10 }} axisLine={false} tickLine={false} width={36} />
+        <Tooltip content={tooltipElement} cursor={{ stroke: 'rgba(255,177,90,0.12)' }} />
+        <Area type="monotone" dataKey={dataKey} stroke="#ffb15a" fill="url(#kpiPopupFill)" strokeWidth={2} />
+      </AreaChart>
+    </ResponsiveContainer>
   );
 }
 
-function KPIHoverPopup({ metric }) {
-  const insight = kpiInsights[metric] || kpiInsights.leads;
+function buildFallbackInsight(metric, title) {
+  return {
+    title: title || 'KPI Overview',
+    eyebrow: 'Performance snapshot',
+    icon: BarChart3,
+    trend: '+0.0%',
+    direction: 'up',
+    chartType: 'area',
+    dataKey: 'sales',
+    data: weeklySalesTrend,
+    stats: [
+      { label: 'Metric', value: title || metric },
+      { label: 'Period', value: 'This month' },
+      { label: 'Status', value: 'On track' },
+      { label: 'Updated', value: 'Live' }
+    ]
+  };
+}
+
+function getInsight(metric, title) {
+  return kpiInsights[metric] || buildFallbackInsight(metric, title);
+}
+
+function KPIHoverPopup({ metric, title }) {
+  const insight = getInsight(metric, title);
+  const Icon = insight.icon;
 
   return (
     <div className="kpi-popup-content">
-      <div className="kpi-popup-sheen"></div>
+      <div className="kpi-popup-sheen" />
       <div className="kpi-popup-header">
         <div>
           <span className="kpi-popup-eyebrow">
-            <GoDotFill size={10} />
+            <Icon size={12} />
             {insight.eyebrow}
           </span>
           <h4>{insight.title}</h4>
         </div>
-        <TrendBadge direction={insight.trendDirection} value={insight.trend} />
+        <TrendBadge direction={insight.direction} trend={insight.trend} />
       </div>
-
       <div className="popup-chart">
         <KPIChart insight={insight} />
       </div>
-
       <div className="kpi-popup-meta">
-        {insight.meta.map((item) => (
+        {insight.stats.map(item => (
           <div className="kpi-popup-stat" key={item.label}>
             <span>{item.label}</span>
             <strong>{item.value}</strong>

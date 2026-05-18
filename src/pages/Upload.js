@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, ArrowRight, Database, FileSpreadsheet, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, CheckCircle2, Database, FileSpreadsheet, X } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../styles/upload.css';
 
 import logo from '../assets/logos/tdt_logo.png';
+import { GOOGLE_SHEETS_KEY, hasImportedSalesData, markSalesDataImported } from '../utils/importStatus';
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -37,42 +38,99 @@ const uploadOptions = [
   },
   {
     id: 'csv',
-    title: 'CSV Upload',
-    description: 'Upload sales data from CSV files with automatic validation',
+    title: 'CSV / XLSX Upload',
+    description: 'Upload sales data from CSV or Excel files with automatic validation',
     Icon: FileSpreadsheet,
-    actionTitle: 'CSV Upload'
+    actionTitle: 'CSV / XLSX Upload'
   }
 ];
 
 export default function Upload({ onComplete, embedded = false }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isRequiredImport = Boolean(location.state?.requiredImport);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [sheetUrl, setSheetUrl] = useState('');
+  const [importSuccess, setImportSuccess] = useState(() => hasImportedSalesData());
   const [isGoogleSheetsConnected, setIsGoogleSheetsConnected] = useState(
-    () => localStorage.getItem('tdt_google_sheets_connected') === 'true'
+    () => localStorage.getItem(GOOGLE_SHEETS_KEY) === 'true'
   );
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
+
+  const canContinue = importSuccess || isGoogleSheetsConnected;
+  const selectedFileLabel = selectedFile?.name || 'Drop CSV or XLSX here';
+
   const handleUploadSelect = useCallback(option => {
     setSelectedOption(option);
+    setSelectedFile(null);
+    setSheetUrl('');
+    setIsDraggingFile(false);
   }, []);
 
+  const acceptFile = useCallback(file => {
+    if (!file) return;
+    const name = file.name.toLowerCase();
+    if (!name.endsWith('.csv') && !name.endsWith('.xlsx')) return;
+    setSelectedFile(file);
+    markSalesDataImported(name.endsWith('.xlsx') ? 'xlsx' : 'csv');
+    setImportSuccess(true);
+    setSelectedOption(null);
+    window.setTimeout(() => onComplete?.(), 250);
+  }, [onComplete]);
+
+  const handleDragOver = useCallback(event => {
+    event.preventDefault();
+    setIsDraggingFile(true);
+  }, []);
+
+  const handleDragLeave = useCallback(event => {
+    event.preventDefault();
+    setIsDraggingFile(false);
+  }, []);
+
+  const handleDrop = useCallback(event => {
+    event.preventDefault();
+    setIsDraggingFile(false);
+    acceptFile(event.dataTransfer.files?.[0]);
+  }, [acceptFile]);
+
   const handleContinue = useCallback(() => {
-    if (selectedOption === 'sheets') {
-      localStorage.setItem('tdt_google_sheets_connected', 'true');
-      setIsGoogleSheetsConnected(true);
-      window.dispatchEvent(new Event('tdt-google-sheets-status'));
-    }
+    if (!canContinue) return;
     onComplete?.();
-  }, [onComplete, selectedOption]);
+  }, [canContinue, onComplete]);
+
+  const handleImport = useCallback(() => {
+    if (selectedOption === 'sheets') {
+      if (!sheetUrl.trim()) return;
+      localStorage.setItem(GOOGLE_SHEETS_KEY, 'true');
+      setIsGoogleSheetsConnected(true);
+      markSalesDataImported('google-sheets');
+      window.dispatchEvent(new Event('tdt-google-sheets-status'));
+      setImportSuccess(true);
+      setSelectedOption(null);
+      return;
+    }
+
+    if (!selectedFile) return;
+    markSalesDataImported(selectedFile.name.toLowerCase().endsWith('.xlsx') ? 'xlsx' : 'csv');
+    setImportSuccess(true);
+    setSelectedOption(null);
+  }, [selectedFile, selectedOption, sheetUrl]);
 
   useEffect(() => {
     const syncStatus = () => {
-      setIsGoogleSheetsConnected(localStorage.getItem('tdt_google_sheets_connected') === 'true');
+      setIsGoogleSheetsConnected(localStorage.getItem(GOOGLE_SHEETS_KEY) === 'true');
+      setImportSuccess(hasImportedSalesData());
     };
 
     window.addEventListener('storage', syncStatus);
     window.addEventListener('tdt-google-sheets-status', syncStatus);
+    window.addEventListener('tdt-sales-import-status', syncStatus);
     return () => {
       window.removeEventListener('storage', syncStatus);
       window.removeEventListener('tdt-google-sheets-status', syncStatus);
+      window.removeEventListener('tdt-sales-import-status', syncStatus);
     };
   }, []);
 
@@ -88,19 +146,21 @@ export default function Upload({ onComplete, embedded = false }) {
       <div className="upload-vignette" />
       <div className="orange-glow" />
 
-      <motion.div className="upload-content" variants={containerVariants} initial="hidden" animate="visible">
-        <motion.div className="upload-header-row" variants={itemVariants}>
-          <motion.button
-            className="upload-back-btn back-button"
-            type="button"
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => navigate('/dashboard')}
-          >
-            <ArrowLeft size={16} />
-            <span>Back</span>
-          </motion.button>
-        </motion.div>
+      <motion.div className={`upload-content ${isRequiredImport ? 'upload-content-required' : ''}`} variants={containerVariants} initial="hidden" animate="visible">
+        {!isRequiredImport && (
+          <motion.div className="upload-header-row" variants={itemVariants}>
+            <motion.button
+              className="upload-back-btn back-button"
+              type="button"
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate('/dashboard')}
+            >
+              <ArrowLeft size={16} />
+              <span>Back</span>
+            </motion.button>
+          </motion.div>
+        )}
         <motion.div className="upload-logo-section upload-header" variants={itemVariants}>
           <motion.img
             src={logo}
@@ -115,6 +175,22 @@ export default function Upload({ onComplete, embedded = false }) {
           <motion.p className="upload-tagline" variants={itemVariants}>
             Advanced Lead Tracking & Revenue Analytics
           </motion.p>
+          <motion.div className="upload-required-status" variants={itemVariants}>
+            <strong>{importSuccess ? 'Data imported successfully' : 'Import sales data to continue'}</strong>
+            <span>CSV, XLSX, or Google Sheets LIVE required</span>
+            {importSuccess && (
+              <em>
+                <CheckCircle2 size={15} />
+                Ready to continue
+              </em>
+            )}
+            {isGoogleSheetsConnected && (
+              <em className="upload-live-connected">
+                <i />
+                LIVE CONNECTED
+              </em>
+            )}
+          </motion.div>
         </motion.div>
         <motion.div className="upload-options upload-grid" variants={itemVariants}>
           {uploadOptions.map(({ id, title, description, Icon }) => (
@@ -134,7 +210,7 @@ export default function Upload({ onComplete, embedded = false }) {
                 <span>{title}</span>
                 {id === 'sheets' && isGoogleSheetsConnected && (
                   <span className="live-badge upload-live-badge google-live">
-                    Google Sheets LIVE
+                    LIVE CONNECTED
                   </span>
                 )}
               </h3>
@@ -165,32 +241,53 @@ export default function Upload({ onComplete, embedded = false }) {
               </button>
               <div>
                 <span className="upload-action-kicker">{selectedOption === 'sheets' ? 'Live sync' : 'File upload'}</span>
-                <h2>{selectedOption === 'sheets' ? 'Google Sheets URL' : 'CSV Upload'}</h2>
-                <p>{selectedOption === 'sheets' ? 'Connect a Google Sheets link to keep dashboard data synchronized.' : 'Select a CSV export from your sales tools.'}</p>
+                <h2>{selectedOption === 'sheets' ? 'Google Sheets URL' : 'CSV / XLSX Upload'}</h2>
+                <p>{selectedOption === 'sheets' ? 'Connect a Google Sheets link to keep dashboard data synchronized.' : 'Select a CSV or XLSX export from your sales tools.'}</p>
               </div>
 
               {selectedOption === 'sheets' ? (
                 <>
                   <label className="upload-action-field">
                     <span>Google Sheets URL</span>
-                    <input type="url" placeholder="https://docs.google.com/spreadsheets/..." />
+                    <input type="url" value={sheetUrl} onChange={event => setSheetUrl(event.target.value)} placeholder="https://docs.google.com/spreadsheets/..." />
                   </label>
                   <p className="upload-live-note">Live sync status appears once the sheet is connected.</p>
                 </>
               ) : (
-                <label className="upload-action-field upload-file-field">
-                  <span>CSV file</span>
-                  <input type="file" accept=".csv,text/csv" />
+                <label
+                  className={`upload-action-field upload-file-field upload-drop-zone ${isDraggingFile ? 'is-dragging' : ''} ${selectedFile ? 'has-file' : ''}`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <span>CSV or XLSX file</span>
+                  <strong>{selectedFileLabel}</strong>
+                  <small>{selectedFile ? 'File ready to import' : 'Drag and drop a file, or click to browse'}</small>
+                  <input type="file" accept=".csv,text/csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={event => acceptFile(event.target.files?.[0])} />
                 </label>
               )}
 
-              <button className="upload-action-primary connect-btn" type="button" onClick={handleContinue}>
-                {selectedOption === 'sheets' ? 'Connect Google Sheets' : 'Upload CSV'}
+              <button
+                className={`upload-action-primary connect-btn ${selectedOption === 'sheets' ? (!sheetUrl.trim() ? 'is-disabled' : '') : (!selectedFile ? 'is-disabled' : '')}`}
+                type="button"
+                onClick={handleImport}
+              >
+                {selectedOption === 'sheets' ? 'Connect Google Sheets' : 'Import Data'}
                 <ArrowRight size={16} />
               </button>
             </motion.div>
           </motion.div>
         )}
+
+        <motion.button
+          className={`upload-continue-dashboard ${!canContinue ? 'is-disabled' : ''}`}
+          type="button"
+          variants={itemVariants}
+          onClick={handleContinue}
+        >
+          Continue to Dashboard
+          <ArrowRight size={17} />
+        </motion.button>
       </motion.div>
     </motion.div>
   );

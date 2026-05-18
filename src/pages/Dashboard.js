@@ -5,7 +5,6 @@ import '../styles/dashboard.css';
 
 import DashboardLayout from '../components/layout/DashboardLayout.jsx';
 import InteractiveMetricCard from '../components/cards/InteractiveMetricCard';
-import MetricCard from '../components/cards/MetricCard';
 import RepTable from '../components/tables/RepTable';
 import { EnterpriseChart, EnterpriseFilters, EnterpriseTable } from '../components/analytics/EnterpriseWidgets';
 import { metricCards } from '../data/dashboardData';
@@ -50,7 +49,7 @@ function MetricSet({ duplicate = false }) {
     <div className="metric-set" aria-hidden={duplicate ? 'true' : undefined}>
       {metricCards.map(card => (
         <div key={`${duplicate ? 'loop' : 'primary'}-${card.metric}`} className="metric-loop-item">
-          {duplicate ? <MetricCard {...card} /> : <InteractiveMetricCard {...card} />}
+          <InteractiveMetricCard {...card} />
         </div>
       ))}
     </div>
@@ -67,7 +66,7 @@ const MainDashboard = memo(function MainDashboard() {
         </p>
       </motion.div>
 
-      <motion.div className="metric-wrapper kpi-grid-wrapper" variants={containerVariants} initial="hidden" animate="visible">
+      <motion.div className="metric-wrapper kpi-grid-wrapper dashboard-grid" variants={containerVariants} initial="hidden" animate="visible">
         <div className="metric-track">
           <MetricSet />
           <MetricSet duplicate />
@@ -127,6 +126,7 @@ export default function Dashboard({ onLogout }) {
     '/analytics': <Suspense fallback={routeLoading}><Analytics /></Suspense>,
     '/sales-analytics': <Suspense fallback={routeLoading}><Analytics /></Suspense>,
     '/lead-sources': <Suspense fallback={routeLoading}><Analytics /></Suspense>,
+    '/lead-analytics': <Suspense fallback={routeLoading}><Analytics /></Suspense>,
     '/product-analytics': <Suspense fallback={routeLoading}><Analytics /></Suspense>,
     '/kpi-monitoring': <Suspense fallback={routeLoading}><Analytics /></Suspense>,
     '/reports': <Suspense fallback={routeLoading}><Analytics /></Suspense>,

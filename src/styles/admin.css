@@ -10,6 +10,7 @@
 .admin-table-shell,
 .admin-user-card,
 .admin-tool-card,
+.admin-start-guide,
 .admin-activity-panel,
 .admin-filter-bar,
 .admin-pagination,
@@ -136,6 +137,79 @@
   text-transform: uppercase;
 }
 
+.admin-hero-badge small {
+  max-width: 130px;
+  color: rgba(255,255,255,0.66);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.admin-start-guide {
+  border-radius: 20px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: minmax(260px, 0.7fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.admin-start-guide span {
+  color: #ffb56d;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-start-guide h2 {
+  margin: 7px 0;
+  color: #fff;
+  font-size: clamp(20px, 2vw, 28px);
+}
+
+.admin-start-guide p {
+  margin: 0;
+  color: rgba(255,255,255,0.62);
+  line-height: 1.45;
+}
+
+.admin-start-guide ol {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  counter-reset: adminSteps;
+  list-style: none;
+}
+
+.admin-start-guide li {
+  min-height: 44px;
+  padding: 10px 12px 10px 52px;
+  border: 1px solid rgba(255,122,0,0.16);
+  border-radius: 14px;
+  background: rgba(0,0,0,0.18);
+  color: rgba(255,255,255,0.82);
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-start-guide li::before {
+  counter-increment: adminSteps;
+  content: counter(adminSteps);
+  position: absolute;
+  left: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #111;
+  background: linear-gradient(135deg, #ff8a00, #ffd083);
+  font-size: 13px;
+  font-weight: 900;
+}
+
 .admin-metrics-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -199,7 +273,9 @@
 .admin-tool-card {
   min-height: 132px;
   display: grid;
-  align-content: center;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: stretch;
+  align-items: start;
   gap: 10px;
   color: #ffb56d;
   border-radius: 18px;
@@ -212,10 +288,50 @@
   font-size: 22px;
 }
 
+.admin-guide-card-icon {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255,122,0,0.25);
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,122,0,0.1);
+}
+
 .admin-tool-card strong,
 .admin-user-copy strong,
 .admin-activity-panel strong {
   color: #fff;
+}
+
+.admin-guide-card strong,
+.admin-guide-card span {
+  display: block;
+}
+
+.admin-guide-card span {
+  margin-top: 6px;
+  line-height: 1.45;
+}
+
+.admin-guide-card button {
+  grid-column: 1 / -1;
+  width: max-content;
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid rgba(255,122,0,0.32);
+  border-radius: 10px;
+  color: #ffd0a1;
+  background: rgba(255,122,0,0.1);
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 180ms ease, background-color 180ms ease;
+}
+
+.admin-guide-card button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255,122,0,0.5);
+  background: rgba(255,122,0,0.16);
 }
 
 .admin-activity-panel {
@@ -455,13 +571,13 @@
 }
 
 .admin-table-shell {
-  overflow-x: hidden;
+  overflow-x: auto;
   border-radius: 18px;
   padding: 10px;
 }
 
 .table-wrapper {
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 .admin-table {
@@ -522,16 +638,17 @@
 
 .admin-user-management-table .admin-table-actions-compact {
   flex-wrap: nowrap;
-  gap: 4px;
+  gap: 5px;
+  justify-content: flex-start;
 }
 
 .admin-user-management-table .admin-table-actions-compact button {
   height: 28px;
   min-height: 28px;
-  padding: 0 7px;
+  padding: 0 9px;
   font-size: 11px;
   border-radius: 8px;
-  gap: 4px;
+  gap: 5px;
 }
 
 .admin-user-management-table .admin-table-actions-compact button svg {
@@ -587,22 +704,22 @@
 
 .admin-user-management-table th:nth-child(2),
 .admin-user-management-table td:nth-child(2) {
-  width: 12%;
+  width: 11%;
 }
 
 .admin-user-management-table th:nth-child(3),
 .admin-user-management-table td:nth-child(3) {
-  width: 11%;
+  width: 10%;
 }
 
 .admin-user-management-table th:nth-child(4),
 .admin-user-management-table td:nth-child(4) {
-  width: 12%;
+  width: 11%;
 }
 
 .admin-user-management-table th:nth-child(5),
 .admin-user-management-table td:nth-child(5) {
-  width: 14%;
+  width: 13%;
 }
 
 .admin-user-management-table th:nth-child(6),
@@ -614,12 +731,12 @@
 
 .admin-user-management-table th:nth-child(8),
 .admin-user-management-table td:nth-child(8) {
-  width: 118px;
+  width: 120px;
 }
 
 .admin-user-management-table th:nth-child(9),
 .admin-user-management-table td:nth-child(9) {
-  width: 168px;
+  width: 252px;
 }
 
 .admin-table th {
@@ -953,6 +1070,7 @@
 
 @media (max-width: 1180px) {
   .admin-metrics-grid,
+  .admin-start-guide,
   .admin-command-grid,
   .admin-user-grid {
     grid-template-columns: 1fr 1fr;
@@ -982,6 +1100,7 @@
   }
 
   .admin-metrics-grid,
+  .admin-start-guide,
   .admin-tools-grid,
   .admin-command-grid,
   .admin-user-grid {

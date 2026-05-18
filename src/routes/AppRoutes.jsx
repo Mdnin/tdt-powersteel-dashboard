@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useMemo } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ import { useAuth } from '../auth/AuthContext';
 import Background from '../components/layout/Background';
 import IntroPopup from '../components/common/IntroPopup';
 import LoadingScreen from '../components/common/LoadingScreen';
+import { SALES_IMPORT_EVENT, hasImportedSalesData } from '../utils/importStatus';
 
 const Login = lazy(() => import('../pages/Login'));
 const Signup = lazy(() => import('../pages/Signup'));
@@ -64,13 +65,36 @@ function RouteShell({ children }) {
   );
 }
 
+function DataImportRoute({ children }) {
+  const location = useLocation();
+
+  if (!hasImportedSalesData()) {
+    return <Navigate to="/upload" state={{ requiredImport: true, from: location }} replace />;
+  }
+
+  return children;
+}
+
 export default function AppRoutes() {
-  const { isAuthenticated, isApproved, isAdmin, logout } = useAuth();
+  const { isAuthenticated, isApproved, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const fallback = useMemo(() => <div className="screen-fallback" />, []);
+  const [dataReady, setDataReady] = useState(() => hasImportedSalesData());
 
-  const authenticatedLanding = isAdmin ? '/dashboard' : '/upload';
+  useEffect(() => {
+    const refresh = () => setDataReady(hasImportedSalesData());
+    window.addEventListener('storage', refresh);
+    window.addEventListener(SALES_IMPORT_EVENT, refresh);
+    window.addEventListener('tdt-google-sheets-status', refresh);
+    return () => {
+      window.removeEventListener('storage', refresh);
+      window.removeEventListener(SALES_IMPORT_EVENT, refresh);
+      window.removeEventListener('tdt-google-sheets-status', refresh);
+    };
+  }, []);
+
+  const authenticatedLanding = dataReady ? '/dashboard' : '/upload';
 
   const handleUploadComplete = useCallback(() => {
     navigate('/dashboard', { replace: true });
@@ -95,7 +119,7 @@ export default function AppRoutes() {
                 path="/login"
                 element={
                   isAuthenticated ? (
-                    <Navigate to={isApproved ? authenticatedLanding : '/approval-pending'} replace />
+                    <Navigate to={isApproved ? authenticatedLanding : '/approval-pending'} state={isApproved && !dataReady ? { requiredImport: true } : undefined} replace />
                   ) : (
                     <RouteShell><Login /></RouteShell>
                   )
@@ -105,7 +129,7 @@ export default function AppRoutes() {
                 path="/signup"
                 element={
                   isAuthenticated ? (
-                    <Navigate to={isApproved ? authenticatedLanding : '/approval-pending'} replace />
+                    <Navigate to={isApproved ? authenticatedLanding : '/approval-pending'} state={isApproved && !dataReady ? { requiredImport: true } : undefined} replace />
                   ) : (
                     <RouteShell><Signup /></RouteShell>
                   )
@@ -129,13 +153,15 @@ export default function AppRoutes() {
                   </ProtectedRoute>
                 }
               />
-              {['/dashboard', '/analytics', '/presentation', '/sales-team', '/sales-analytics', '/lead-sources', '/product-analytics', '/kpi-monitoring', '/sales-reps', '/rankings', '/performance-board', '/reports', '/profile'].map(path => (
+              {['/dashboard', '/analytics', '/presentation', '/sales-team', '/sales-analytics', '/lead-sources', '/lead-analytics', '/product-analytics', '/kpi-monitoring', '/sales-reps', '/rankings', '/performance-board', '/reports', '/profile'].map(path => (
                 <Route
                   key={path}
                   path={path}
                   element={
                     <ProtectedRoute>
-                      <Dashboard onLogout={handleLogout} />
+                      <DataImportRoute>
+                        <Dashboard onLogout={handleLogout} />
+                      </DataImportRoute>
                     </ProtectedRoute>
                   }
                 />

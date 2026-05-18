@@ -102,6 +102,15 @@
 }
 
 .kpi-grid {
+  overflow: visible;
+}
+
+.dashboard-grid {
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
@@ -131,7 +140,7 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  overflow-x: visible;
+  overflow: hidden;
 }
 
 .chart-grid {
